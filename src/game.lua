@@ -128,7 +128,7 @@ class "game" {
 				
 			end
 			if self.sprite.samus.jumpStop then love.graphics.print("STOP", 175, 1) end
-			local x, y = self.sprite.samus:getWorld(1, 4, self.tmap.env.tileSize, self.tmap)
+			local x, y = self.sprite.samus:getWorld(1, 15, self.tmap.env.tileSize, self.tmap)
 			love.graphics.print(x .. " " .. y, 175, 1)
 		end	
 	end
