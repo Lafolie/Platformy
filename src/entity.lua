@@ -84,7 +84,7 @@ class "entity" (sprite) {
 				self.dxdot = (worldX * map.env.tileSize)
 			end
 			--/debug 
-			if (map:pass(worldX, worldY) or 0) >= 2 then
+			if (map:pass(worldX, worldY) or 0) >= 2 and not(self.ramp) then
 				if self.velX < 0 then
 					self.velX = 0
 					self.posX = (worldX * map.env.tileSize) + w
@@ -103,7 +103,7 @@ class "entity" (sprite) {
 			if debugMode then
 				self.dxdot = (worldX * map.env.tileSize)
 			end
-			if (map:pass(worldX, worldY) or 10) <= 2 then --only collide if it's a true solid tile
+			if (map:pass(worldX, worldY) or 10) <= 2 and not(self.ramp) then --only collide if it's a true solid tile
 				if self.velX > 0 then
 					self.velX = 0
 					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
@@ -157,24 +157,25 @@ class "entity" (sprite) {
 			end
 			
 			--special case for stairs
-			local worldX, worldY = self:getWorld(0, 8, map.env.tileSize, map)
-			if map:pass(worldX, worldY) then
+			local worldX, worldY = self:getWorld(1, 4, map.env.tileSize, map)
+			if map:pass(worldX, worldY) and self.velY >= 0 then
 				--stairs
 				self.air = nil
+				self.ramp = true
 				local worldX, worldY = self:getWorld(-w * 0.5, 4, map.env.tileSize, map)
 				local hm = map:heightMap(worldX, worldY)
-				local hmId = hm and math.floor((self.posX - w * 0.25) - (worldX * map.env.tileSize - 16))
+				local hmId = hm and math.floor((self.posX - w * 0.25) - (worldX - 1) * map.env.tileSize)
 				local hmA = hm and hm[hmId] or 0
 
 				local worldX, worldY = self:getWorld(w * 0.5, 4, map.env.tileSize, map)
 				local hm = map:heightMap(worldX, worldY)
-				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX * map.env.tileSize - 16))
+				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
 				local hmB = hm and hm[hmId] or 0
 				self.posY = (worldY - 1) * map.env.tileSize - math.abs(hmA - hmB) / 2
 				self.velY = 0 
 				print((hmA + hmB) / 2 .. " A-" .. hmA .. " B-" .. hmB .. " hmID-" .. 1 .. " wx" .. worldY)
 			else
-				print("NORAMP")
+				self.ramp = nil
 			end
 			
 						--special case for stairs
