@@ -26,12 +26,17 @@ class "game" {
 		love.graphics.setIcon(love.graphics.newImage("spr/platformy.png"))
 
 		--Graphic content
+		self.entity = {}
 		self.library = {}
 		self.sprite = {}
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
+		--self.sprite.samus.scroll = true
+		self.sprite.sax = entity(spriteset("spr/samus.png", 25, 32))
+		self.sprite.sax.posX = 102
+		self.sprite.sax.posY = 32
 		
 		--TEMP DATA, to be stored in files eventually
 		self.environment = {}
@@ -45,18 +50,18 @@ class "game" {
 		local basicRamp2 = {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1}
 		local ramp = tileProperties(3, basicRamp)
 		local ramp2 = tileProperties(1, basicRamp2)
-		local properties = {noclip, clip, ramp, ramp2, noclip} --load tileset passabilty data
+		local properties = {noclip, clip, ramp, ramp2, noclip, noclip, ramp, ramp2} --load tileset passabilty data
 		local tempmap = {
 							{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 1, 1, 1, 5, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 8, 1, 1, 7, 2, 2, 2, 2, 2, 2},
 							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
 							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
-							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 3, 5, 1, 1, 1, 2, 2, 2, 2},
-							{2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2},
+							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 5, 1, 1, 1, 2, 2, 2, 2},
+							{2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2},
 							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2},
 							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
 							{2, 1, 2, 1, 2, 1, 2, 4, 1, 1, 3, 4, 1, 3, 2, 4, 1, 2, 2, 2},
@@ -100,12 +105,22 @@ class "game" {
 			--Temp stuff
 			if love.keyboard.isDown(self.key.left) then self.sprite.samus.control.left = true else self.sprite.samus.control.left = nil end
 			if love.keyboard.isDown(self.key.right) then self.sprite.samus.control.right = true else self.sprite.samus.control.right = nil end
+			
+			--player2test
+			if love.keyboard.isDown("k") then self.sprite.sax.control.left = true else self.sprite.sax.control.left = nil end
+			if love.keyboard.isDown("l") then self.sprite.sax.control.right = true else self.sprite.sax.control.right = nil end
 			self.tmap:update(dt, t)
 
 			for k, sprite in pairs(self.sprite) do
-				sprite:update(dt, t, self.tmap)
+				sprite:update(dt, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY)
+			end
+			for k, entity in ipairs(self.entity) do
+				entity:update(dt, t, self.tmap, self.offsetX, self.offsetY)
 			end
 			
+			--update the drawing position of the map
+			self.tmap.offsetX = math.floor(self.sprite.samus.posX - self.offsetX)
+			self.tmap.offsetY = math.floor(self.sprite.samus.posY - self.offsetY)
 		end
 	end,
 	
@@ -114,7 +129,10 @@ class "game" {
 		love.graphics.scale(self.scale)
 		self.tmap:draw()
 		for k, sprite in pairs(self.sprite) do
-			sprite:draw(self.offsetX, self.offsetY)
+			sprite:draw()
+		end
+		for k, entity in pairs(self.entity) do
+			entity:draw()
 		end
 		love.graphics.pop()
 		if debugMode then
@@ -133,6 +151,10 @@ class "game" {
 			love.graphics.print(x .. " " .. y, 175, 1)
 			love.graphics.print("X-" .. self.sprite.samus.posX .. " Y-" .. self.sprite.samus.posY, 1, 17)
 		end	
+	end,
+	
+	spawnSAX = function(self)
+		table.insert(self.entity, sprite("spr/samus.png"), 25, 32)
 	end
 }
 					

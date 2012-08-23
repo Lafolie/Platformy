@@ -22,7 +22,7 @@ class "entity" (sprite) {
 		self.height = height or self.width --these are used for collisions
 	end,
 	
-	update = function(self, dt, t, map)
+	update = function(self, dt, t, map, offsetX, offsetY)
 		--badass pseudo physics (all hail Yuji Naka)
 		if not(self.controlLock) then
 			--apply voluntary movement
@@ -91,7 +91,7 @@ class "entity" (sprite) {
 				end
 				
 			end
-			if map:pass(worldX, worldY - 1) and (self.air and math.abs(self.velY) < 75) then
+			if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 				if self.velX < 0 then
 					self.velX = 0
 				end
@@ -148,7 +148,6 @@ class "entity" (sprite) {
 			--special case for stairs
 			local stairsOffsetX = self.direction == "right" and -w * 0.25 or w * 0.25
 			local worldX, worldY = self:getWorld(stairsOffsetX, map.env.tileSize - 1, map.env.tileSize, map)
-			print("WX-" .. worldX)
 			if (map:pass(worldX, worldY) and self.velY >= 0) or self.stairs then
 				--stairs
 				local worldX, worldY = self:getWorld(-w * 0.25, 10, map.env.tileSize, map)
@@ -160,6 +159,7 @@ class "entity" (sprite) {
 				local hm = map:heightMap(worldX, worldY)
 				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
 				local hmB = hm and hm[hmId] or 0
+				print("RAMPOFF-" .. math.max(hmA, hmB) .. " hmA-" .. hmA .. " hmB-" .. hmB)
 				--prevent snapping from above
 				if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
 					self.velY = self.velY + map.env.gravity * dt
@@ -167,11 +167,12 @@ class "entity" (sprite) {
 				elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then
 					self.posX = (worldX - 1) * map.env.tileSize - w
 					
+					
 				else
 					--set to height of ramp/stair
+					--if hmA == 0 and hmb == 0 then hmA = 16 end
 					self.posY = (worldY - 1) * map.env.tileSize - math.max(hmA, hmB)
 					self.velY = 0 
-					print(math.max(hmA, hmB) .. " A-" .. hmA .. " B-" .. hmB .. " posY-" .. self.posY .. " wy" .. worldY)
 					self.air = nil
 					self.ramp = true
 				end
@@ -180,6 +181,8 @@ class "entity" (sprite) {
 			end
 
 			--celings
+--			local worldX, worldY = self:getWorld
+--			if map:pass
 			if self.air then
 				local worldX, worldY = self:getWorld(-w / 4, -map.env.tileSize + 1, map.env.tileSize, map)
 				local senC, senD = true, true --ground sensors
@@ -199,6 +202,43 @@ class "entity" (sprite) {
 					self.velY = 0
 					self.posY = (worldY	* map.env.tileSize) + map.env.tileSize - h * 0.25
 				end
+				
+				--special case for stairs ON THE CEILING (EXPERIMENTAL, DISABLED FOR NOW)
+	--			local stairsOffsetX = self.direction == "right" and -w * 0.25 or w * 0.25
+	--			local worldX, worldY = self:getWorld(stairsOffsetX, -map.env.tileSize + 1, map.env.tileSize, map)
+	--			print("WX-" .. worldX)
+	--			if (map:pass(worldX, worldY - 1) and self.velY <= 0) then
+	--				--stairs
+	--				local worldX, worldY = self:getWorld(-w * 0.25, -10, map.env.tileSize, map)
+	--				local hm = map:heightMap(worldX, worldY)
+	--				local hmId = hm and math.floor((self.posX - w * 0.25) - (worldX - 1) * map.env.tileSize)
+	--				local hmA = hm and hm[hmId] or 0
+	--
+	--				local worldX, worldY = self:getWorld(w * 0.25, -10, map.env.tileSize, map)
+	--				local hm = map:heightMap(worldX, worldY)
+	--				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
+	--				local hmB = hm and hm[hmId] or 0
+	--				<remove>
+	--				prevent snapping from above
+	--				if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
+	--					self.velY = self.velY + map.env.gravity * dt
+	--					self.air = true
+	--				elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then
+	--					self.posX = (worldX - 1) * map.env.tileSize - w
+	--					
+	--				else
+	--				</remove>
+						--set to height of ramp/stair
+	--					self.posY = (worldY - 1) * map.env.tileSize - math.max(hmA, hmB)
+	--					self.velY = 0 
+	--					print(math.max(hmA, hmB) .. " A-" .. hmA .. " B-" .. hmB .. " posY-" .. self.posY .. " wy" .. worldY)
+	--					--self.air = nil
+	--					--self.ramp = true
+	--				--end
+	--			else
+	--				--self.ramp = nil
+	--			end
+
 			end
 				
 		end
@@ -210,11 +250,11 @@ class "entity" (sprite) {
 		
 		self.posX = self.posX + self.velX * dt
 		self.posY = self.posY + self.velY * dt
-		sprite.update(self, dt, t) --update graphics
+		sprite.update(self, dt, t, offsetX, offsetY) --update graphics
 	end,
 	
-	draw = function(self, offsetX, offsetY)
-		sprite.draw(self, offsetX, offsetY)
+	draw = function(self)
+		sprite.draw(self)
 		love.graphics.setPointStyle("rough")
 		love.graphics.setColor(255, 255, 255, 255)
 		love.graphics.point(self.dxdot or 0, self.posY)

@@ -17,18 +17,22 @@ class "sprite" {
 		self.color = {255, 255, 255, 255}
 		self.drawX = 0 --screen location
 		self.drawY = 0
+		self.offsetX = 0
+		self.offsetY = 0
 		self.direction = "right"
 	end,
 	
-	update = function(self, dt, t)
+	update = function(self, dt, t, offsetX, offsetY)
 		if t - self.time > self.currentAnimation[self.animCount][2] then
 			self.currentFrame = self.currentAnimation[self.animCount][1]
 			self.time = love.timer.getTime()
 			self.animCount = self.animCount + 1 <= # self.currentAnimation and self.animCount + 1 or 1
 		end
 		local x, y, w, h = self.spriteset.sprite[self.currentFrame]:getViewport()
-		self.drawX = math.floor(self.posX - w / 2)
-		self.drawY = math.floor(self.posY - h / 2)
+		self.offsetX = offsetX or self.offsetX
+		self.offsetY = offsetY or self.offsetY
+		self.drawX = math.floor(self.posX - w / 2) + self.offsetY
+		self.drawY = math.floor(self.posY - h / 2) + self.offsetX
 		
 		if self.direction == "right" then
 			self.scaleX = 1
@@ -44,11 +48,9 @@ class "sprite" {
 
 	end,
 	
-	draw = function(self, offsetX, offsetX)
-		local offsetX = x or 0
-		local offsetY = y or 0
+	draw = function(self)
 		love.graphics.setColor(self.color)
-		love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[self.currentFrame], self.drawX + offsetX, self.drawY + offsetY, 0, self.scaleX, self.scaleY, self.originX, self.originY)
+		love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[self.currentFrame], self.drawX, self.drawY, 0, self.scaleX, self.scaleY, self.originX, self.originY)
 		--debug stuff--------------------------------------
 		if debugMode then
 			love.graphics.setLineStyle("rough")

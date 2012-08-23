@@ -36,15 +36,16 @@ class "map" {
 		
 	end,
 	
-	update = function(self, dt, t)
+	update = function(self, dt, t, offsetX, offsetY)
 		for k, id in ipairs(self.animatedTiles) do
 			--animation function
 		end
+
 	end,
 	
 	draw = function(self)
 		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.draw(self.batch, math.floor(self.posX), math.floor(self.posY))
+		love.graphics.draw(self.batch, math.floor(self.posX) + self.offsetX, math.floor(self.posY) + self.offsetY)
 	end,
 	
 	pass = function(self, x, y)
