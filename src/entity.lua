@@ -91,7 +91,7 @@ class "entity" (sprite) {
 				end
 				
 			end
-			if map:pass(worldX, worldY - 1) and (not(self.air) or math.abs(self.velY) < 75) then
+			if map:pass(worldX, worldY - 1) and (not self.air or math.abs(self.velY) < 75) then
 				if self.velX < 0 then
 					self.velX = 0
 				end
@@ -112,7 +112,7 @@ class "entity" (sprite) {
 				--check for stairs(right)
 --				
 			end
-			if map:pass(worldX, worldY - 1) and (not(self.air) or math.abs(self.velY) < 75) then
+			if map:pass(worldX, worldY - 1) and (not self.air or math.abs(self.velY) < 75) then
 				if self.velX > 0 then
 					self.velX = 0
 				end
@@ -142,42 +142,48 @@ class "entity" (sprite) {
 				--nothing
 				self.velY = self.velY + map.env.gravity * dt
 				self.air = true
-			elseif (senA == 2) or (senB == 2) then
+			elseif (senA and senA == 2) or (senB and senB == 2) then
 				--floor
-				if self.velY >= 0 and self.posY + self.velY >= worldY * map.env.tileSize then
+				if self.velY >= 0 and self.posY + self.velY * dt >= worldY * map.env.tileSize then
 					self.velY = 0
-						self.posY = (worldY * map.env.tileSize - map.env.tileSize) - map.env.tileSize
-					
+					self.posY = (worldY -2) * map.env.tileSize
 					self.air = nil
 				else
 					self.velY = 0
-					self.posY = (worldY * map.env.tileSize - map.env.tileSize) - map.env.tileSize
+					self.posY = (worldY - 2) * map.env.tileSize
 					self.air = nil
 				end
-			elseif (senA and senA ~=2) or (senB and senB ~= 2) then
+			elseif (senA and senA ~= 2) and (senB and senB ~= 2) then
 				self.posY = (worldY - 1) * map.env.tileSize + 1
 			end
 			
 			--special case for stairs
-			local worldX, worldY = self:getWorld(0, 15, map.env.tileSize, map)
+			local stairsOffsetX = self.direction == "right" and -w * 0.25 or w * 0.25
+			local worldX, worldY = self:getWorld(stairsOffsetX, map.env.tileSize - 1, map.env.tileSize, map)
+			print("WX-" .. worldX)
 			if (map:pass(worldX, worldY) and self.velY >= 0) or self.stairs then
 				--stairs
-				local worldX, worldY = self:getWorld(-w * 0.5, 10, map.env.tileSize, map)
+				local worldX, worldY = self:getWorld(-w * 0.25, 10, map.env.tileSize, map)
 				local hm = map:heightMap(worldX, worldY)
 				local hmId = hm and math.floor((self.posX - w * 0.25) - (worldX - 1) * map.env.tileSize)
 				local hmA = hm and hm[hmId] or 0
 
-				local worldX, worldY = self:getWorld(w * 0.5, 10, map.env.tileSize, map)
+				local worldX, worldY = self:getWorld(w * 0.25, 10, map.env.tileSize, map)
 				local hm = map:heightMap(worldX, worldY)
 				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
 				local hmB = hm and hm[hmId] or 0
 				--prevent snapping from above
-				if self.air and self.posY < math.max(hmA, hmB) then
-					self.velY = self.velY + map.env,gravity * dt
+				if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
+					self.velY = self.velY + map.env.gravity * dt
+					self.air = true
+				elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then
+					self.posX = (worldX - 1) * map.env.tileSize - w
+					
 				else
+					--set to height of ramp/stair
 					self.posY = (worldY - 1) * map.env.tileSize - math.max(hmA, hmB)
 					self.velY = 0 
-					print((hmA + hmB) / 2 .. " A-" .. hmA .. " B-" .. hmB .. " hmID-" .. 1 .. " wy" .. worldY)
+					print(math.max(hmA, hmB) .. " A-" .. hmA .. " B-" .. hmB .. " posY-" .. self.posY .. " wy" .. worldY)
 					self.air = nil
 					self.ramp = true
 				end
