@@ -23,6 +23,7 @@ class "game" {
 		self.key = {["up"] = "w", ["down"] = "s", ["left"] = "a", ["right"] = "d", ["jump"] = " ", ["fire"] = "<"}
 		self.offsetX = love.graphics.getWidth() / 2
 		self.offsetY = love.graphics.getHeight() / 2
+		love.graphics.setIcon(love.graphics.newImage("spr/platformy.png"))
 
 		--Graphic content
 		self.library = {}
@@ -30,7 +31,7 @@ class "game" {
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
-		self.sprite.samus.posY = 16
+		self.sprite.samus.posY = 32
 		
 		--TEMP DATA, to be stored in files eventually
 		self.environment = {}

@@ -91,7 +91,7 @@ class "entity" (sprite) {
 				end
 				
 			end
-			if map:pass(worldX, worldY - 1) and (not self.air or math.abs(self.velY) < 75) then
+			if map:pass(worldX, worldY - 1) and (self.air and math.abs(self.velY) < 75) then
 				if self.velX < 0 then
 					self.velX = 0
 				end
@@ -108,9 +108,6 @@ class "entity" (sprite) {
 					self.velX = 0
 					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
 				end
-				
-				--check for stairs(right)
---				
 			end
 			if map:pass(worldX, worldY - 1) and (not self.air or math.abs(self.velY) < 75) then
 				if self.velX > 0 then
@@ -119,20 +116,11 @@ class "entity" (sprite) {
 				self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
 			end
 			
-			--gravitah (respect my)
-			--local senA, senB = true, true --ground sensors
-			
+			--gravitah (respect my)			
 			--sensory
 			local worldX, worldY = self:getWorld(-w * 0.25, map.env.tileSize + 1, map.env.tileSize, map)
---			if map:pass(worldX, worldY) == 2 then
---				senA = nil
---			end
 			local senA = map:pass(worldX, worldY)
 			local worldX, worldY = self:getWorld(w * 0.25, map.env.tileSize + 1, map.env.tileSize, map)
---			if map:pass(worldX, worldY) == 2 then
---				senB = nil
---			end
-			
 			local senB = map:pass(worldX, worldY)
 						
 			--actuate
@@ -190,22 +178,7 @@ class "entity" (sprite) {
 			else
 				self.ramp = nil
 			end
-			
-						--special case for stairs
---			if (senA and senA ~= 2) and (senB and senB ~= 2) then
---				local worldX, worldY = self:getWorld(0, 20, map.env.tileSize, map)
---				local hm = map:heightMap(worldX, worldY)
---				local hmId = hm and math.floor((self.posX - w * 0.25) - (worldX * map.env.tileSize - 16))
---				local hmA = hm and hm[hmId] or 16
---				print(hmId)
---				
---				local worldX, worldY = self:getWorld(0, 20, map.env.tileSize, map)
---				local hm = map:heightMap(worldX, worldY)
---				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX * map.env.tileSize - 16))
---				local hmB = hm and hm[hmId] or 16
---				self.posY = self.posY - (hmA + hmB) / 2
---				print(hmId)
---			end
+
 			--celings
 			if self.air then
 				local worldX, worldY = self:getWorld(-w / 4, -map.env.tileSize + 1, map.env.tileSize, map)
