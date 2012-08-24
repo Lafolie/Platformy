@@ -42,10 +42,11 @@ class "game" {
 		self.entity[1].posY = 32
 		self.entity[1].control.right = true
 		self.entity[1].ai = function(self)
+			print(self.velX)
 			if self.velX == 0 then
 				self.control.jump = true
-				if self.velY > 0 then self.control.jumpRelease = true end
-				if self.velY < 0 then
+				if self.velY > 90 then self.control.jumpRelease = true end
+				if self.velY > 10 and self.control.jumpRelease then
 					if self.control.left then 
 						self.control.left = nil
 						self.control.right = true
@@ -54,6 +55,8 @@ class "game" {
 						self.control.right = nil
 					end
 				end
+			else
+--				self.control.jumpRelease = nil
 			end
 --			if (self.control[direction] == true and self.velY > 0 then
 				
