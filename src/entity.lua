@@ -46,8 +46,12 @@ class "entity" (sprite) {
 			
 			--jumping
 			if self.control.jump and not(self.air) then
+				local worldX, worldY = self:getWorld(-self.width / 4, -map.env.tileSize + 1, map.env.tileSize, map)
+				local worldX2 = self:getWorld(self.width / 4, -map.env.tileSize + 1, map.env.tileSize, map)
+				if not map:pass(worldX, worldY - 1) and not map:pass(worldX2, worldY - 1) then
 				self.velY = self.jmpDisable and self.velY or self.jmp
 				self.jmpDisable = true
+				end
 			end
 			
 			if self.control.jumpRelease then
@@ -181,8 +185,6 @@ class "entity" (sprite) {
 			end
 
 			--celings
---			local worldX, worldY = self:getWorld
---			if map:pass
 			if self.air then
 				local worldX, worldY = self:getWorld(-w / 4, -map.env.tileSize + 1, map.env.tileSize, map)
 				local senC, senD = true, true --ground sensors
@@ -240,8 +242,9 @@ class "entity" (sprite) {
 	--			end
 
 			end
-				
 		end
+		
+		--don't bother jumping if there's a tile above
 		
 		--finish up!
 		if self.velX == 0 and not(self.air) then self:setAnim("stand") end

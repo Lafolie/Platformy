@@ -31,8 +31,8 @@ class "sprite" {
 		local x, y, w, h = self.spriteset.sprite[self.currentFrame]:getViewport()
 		self.offsetX = offsetX or self.offsetX
 		self.offsetY = offsetY or self.offsetY
-		self.drawX = math.floor(self.posX - w / 2) + self.offsetY
-		self.drawY = math.floor(self.posY - h / 2) + self.offsetX
+		self.drawX = self.posX - w / 2 + self.offsetX
+		self.drawY = self.posY - h / 2 + self.offsetY
 		
 		if self.direction == "right" then
 			self.scaleX = 1

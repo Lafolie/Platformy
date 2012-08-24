@@ -21,8 +21,8 @@ class "game" {
 		self.saveGame = {["progress"] = {}, ["items"] = {}, ["energy"] = 99, ["missile"] = 0, ["location"] = {0, 0}}
 		self.mode = "map"
 		self.key = {["up"] = "w", ["down"] = "s", ["left"] = "a", ["right"] = "d", ["jump"] = " ", ["fire"] = "<"}
-		self.offsetX = love.graphics.getWidth() / 2
-		self.offsetY = love.graphics.getHeight() / 2
+		self.offsetX = (love.graphics.getWidth() / 2) / 2
+		self.offsetY = (love.graphics.getHeight() / 2) / 2
 		love.graphics.setIcon(love.graphics.newImage("spr/platformy.png"))
 
 		--Graphic content
@@ -57,14 +57,14 @@ class "game" {
 							{2, 2, 1, 1, 1, 5, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 8, 1, 1, 7, 2, 2, 2, 2, 2, 2},
+							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2},
 							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
 							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
 							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 5, 1, 1, 1, 2, 2, 2, 2},
 							{2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2},
 							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2},
 							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-							{2, 1, 2, 1, 2, 1, 2, 4, 1, 1, 3, 4, 1, 3, 2, 4, 1, 2, 2, 2},
+							{2, 1, 2, 1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2},
 							{2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2},
 							{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
 						}
@@ -119,8 +119,8 @@ class "game" {
 			end
 			
 			--update the drawing position of the map
-			self.tmap.offsetX = math.floor(self.sprite.samus.posX - self.offsetX)
-			self.tmap.offsetY = math.floor(self.sprite.samus.posY - self.offsetY)
+			self.tmap.offsetX = -self.sprite.samus.posX + self.offsetX
+			self.tmap.offsetY = -self.sprite.samus.posY + self.offsetY
 		end
 	end,
 	

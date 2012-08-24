@@ -45,7 +45,7 @@ class "map" {
 	
 	draw = function(self)
 		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.draw(self.batch, math.floor(self.posX) + self.offsetX, math.floor(self.posY) + self.offsetY)
+		love.graphics.draw(self.batch, self.posX + self.offsetX, self.posY + self.offsetY)
 	end,
 	
 	pass = function(self, x, y)
