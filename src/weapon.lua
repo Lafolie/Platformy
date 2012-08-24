@@ -8,9 +8,9 @@ class "weapon" {
 		self.spawnOffsetX = spawnOffsetX or 0
 		self.spawnOffsetY = spawnOffsetY or 0 --these cause the bullet to spawn in line with the users' sprite
 		self.bulletSpr = bulletSpr or spriteset("spr/power.png", 4, 5)
-		self.spawnVelX = spawnVelX or 150
+		self.spawnVelX = spawnVelX or 200
 		self.spawnVelY = spawnVelY or self.spawnVelX
-		self.cool = cool or 0.15 --weapon cooldown
+		self.cool = cool or 0.1 --weapon cooldown
 		self.time = love.timer.getTime()
 	end,
 	

@@ -37,7 +37,7 @@ class "game" {
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
-		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 0.005)
+		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 0.1)
 		
 		--self.sprite.samus.scroll = true
 		--TEMPORARY SAX
@@ -147,6 +147,7 @@ class "game" {
 				self.key.right = self.key.right == "right" and "d" or "right"
 			end
 			if key == self.key.jump then self.sprite.samus.control.jumpRelease = true end
+			if key == self.key.fire then self.sprite.samus.control.fire = nil end
 		end
 		
 		if self.mode == "map" then

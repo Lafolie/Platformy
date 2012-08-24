@@ -254,7 +254,7 @@ class "entity" (sprite) {
 		if self.control.fire and self.weapon then
 			local bulletDirectionX = self.direction == "left" and -1 or 1
 			self.weapon:fire(t, self.posX, self.posY, bulletDirectionX, 0)
-			self.control.fire = nil
+--			self.control.fire = nil
 		end
 		--update the weapon & bullets
 		if self.weapon then
