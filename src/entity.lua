@@ -98,8 +98,9 @@ class "entity" (sprite) {
 			if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 				if self.velX < 0 then
 					self.velX = 0
+									self.posX = (worldX * map.env.tileSize) + w
+
 				end
-				self.posX = (worldX * map.env.tileSize) + w
 			end
 			
 			--RIGHT SENSOR
@@ -113,11 +114,12 @@ class "entity" (sprite) {
 					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
 				end
 			end
-			if map:pass(worldX, worldY - 1) and (not self.air or math.abs(self.velY) < 75) then
+			if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 				if self.velX > 0 then
 					self.velX = 0
+									self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
+
 				end
-				self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
 			end
 			
 			--gravitah (respect my)			
@@ -280,7 +282,7 @@ class "entity" (sprite) {
 	
 	getWorld = function(self, offX, offY, tileSize, map)
 		local x, y =  math.ceil((self.posX + offX) / tileSize), math.ceil((self.posY + offY) / tileSize)
-		x = math.max(math.min(x, # map.layout[1]), 1)
+		x = math.max(math.min(x, # map.layout[y]), 1)
 		y = math.max(math.min(y, # map.layout), 1)
 		return x, y
 	end		

@@ -29,14 +29,17 @@ class "game" {
 		self.entity = {}
 		self.library = {}
 		self.sprite = {}
+		self.smoothIndex = 1
+		self.smoothFactor = 4
+		self.smooth = {}
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
 		--self.sprite.samus.scroll = true
-		self.sprite.sax = entity(spriteset("spr/samus.png", 25, 32))
-		self.sprite.sax.posX = 102
-		self.sprite.sax.posY = 32
+		table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32)))
+		self.entity[1].posX = 102
+		self.entity[1].posY = 32
 		
 		--TEMP DATA, to be stored in files eventually
 		self.environment = {}
@@ -56,17 +59,33 @@ class "game" {
 							{2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 1, 1, 1, 5, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2},
-							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
-							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2},
-							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 5, 1, 1, 1, 2, 2, 2, 2},
-							{2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2},
-							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2},
-							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2},
-							{2, 1, 2, 1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2},
-							{2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2},
-							{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
+							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2},
+							{2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2},
+							{2, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 5, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2},
+							{2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3, 1, 2},
+							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2, 1, 2},
+							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2, 2, 2, 1, 2},
+							{2, 1, 2, 1, 2, 1, 2, 2, 1, 1, 4, 1, 1, 3, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2},
+							{2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1, 2},
+							{2, 2, 2, 2, 2, 1, 1, 1, 1, 3, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 1, 2},--EO1
+							{2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2},
+							{2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2},
+							{2, 2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 5, 1, 1, 2},
+							{2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2},
+							{2, 2, 5, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 2},
+							{2, 2, 2, 1, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 2},
+							{2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2},
+							{2, 1, 1, 1, 2, 2, 1, 5, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2},
+							{2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2},
+							{2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2},
+							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2, 2, 2},
+							{2, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2},
+							{2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 4, 1, 3, 2, 2, 1, 2},
+							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2},
+							{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							
 						}
 		self.tmap = map(tempmap, tileset("spr/tiles.png", properties, self.environment.tileSize))
 		
@@ -107,20 +126,37 @@ class "game" {
 			if love.keyboard.isDown(self.key.right) then self.sprite.samus.control.right = true else self.sprite.samus.control.right = nil end
 			
 			--player2test
-			if love.keyboard.isDown("k") then self.sprite.sax.control.left = true else self.sprite.sax.control.left = nil end
-			if love.keyboard.isDown("l") then self.sprite.sax.control.right = true else self.sprite.sax.control.right = nil end
 			self.tmap:update(dt, t)
-
+			--update player
 			for k, sprite in pairs(self.sprite) do
 				sprite:update(dt, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY)
 			end
+			--smoothing factor. Used to smooth out the scrolling effect
+			self.smooth[self.smoothIndex] = {}
+			self.smooth[self.smoothIndex].x = -self.sprite.samus.posX
+			self.smooth[self.smoothIndex].y = -self.sprite.samus.posY
+			
+			local smoothOffset = {x = 0, y = 0}
+			for k, pos in ipairs(self.smooth) do
+				print(pos.x)
+				smoothOffset.x = smoothOffset.x + pos.x
+				smoothOffset.y = smoothOffset.y + pos.y
+			end
+			
+			smoothOffset.x = (smoothOffset.x / # self.smooth)
+			smoothOffset.y = (smoothOffset.y / # self.smooth)
+			
+			self.smoothIndex = self.smoothIndex + 1 <= self.smoothFactor and self.smoothIndex + 1 or 1
+--			smoothOffset.x = 0
+--			smoothOffset.y = 0
+			--update entities
 			for k, entity in ipairs(self.entity) do
-				entity:update(dt, t, self.tmap, self.offsetX, self.offsetY)
+				entity:update(dt, t, self.tmap, smoothOffset.x + self.offsetX, smoothOffset.y + self.offsetY)
 			end
 			
 			--update the drawing position of the map
-			self.tmap.offsetX = -self.sprite.samus.posX + self.offsetX
-			self.tmap.offsetY = -self.sprite.samus.posY + self.offsetY
+			self.tmap.offsetX = smoothOffset.x + self.offsetX
+			self.tmap.offsetY = smoothOffset.y + self.offsetY
 		end
 	end,
 	
@@ -131,7 +167,7 @@ class "game" {
 		for k, sprite in pairs(self.sprite) do
 			sprite:draw()
 		end
-		for k, entity in pairs(self.entity) do
+		for k, entity in ipairs(self.entity) do
 			entity:draw()
 		end
 		love.graphics.pop()
