@@ -18,9 +18,9 @@ class "game" {
 		--Core stuff
 		self.scale = 2
 		love.graphics.setDefaultImageFilter("nearest", "nearest")
-		self.saveGame = {["progress"] = {}, ["items"] = {}, ["energy"] = 99, ["missile"] = 0, ["location"] = {0, 0}}
+		self.saveGame = {progress = {}, items = {}, energy = 99, missile = 0, location = {0, 0}}
 		self.mode = "map"
-		self.key = {["up"] = "w", ["down"] = "s", ["left"] = "a", ["right"] = "d", ["jump"] = " ", ["fire"] = "<"}
+		self.key = {up = "w", down = "s", left = "a", right = "d", jump = " ", fire = ";"}
 		self.offsetX = (love.graphics.getWidth() / 2) / 2
 		self.offsetY = (love.graphics.getHeight() / 2) / 2
 		love.graphics.setIcon(love.graphics.newImage("spr/platformy.png"))
@@ -33,10 +33,14 @@ class "game" {
 		self.smoothFactor = 4
 		self.smooth = {}
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
+		--TEMPORARY SAMUS
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
+		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 0.005)
+		
 		--self.sprite.samus.scroll = true
+		--TEMPORARY SAX
 		table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32)))
 		self.entity[1].posX = 102
 		self.entity[1].posY = 32
@@ -46,7 +50,7 @@ class "game" {
 			if self.velX == 0 then
 				self.control.jump = true
 				if self.velY > 90 then self.control.jumpRelease = true end
-				if self.velY > 10 and self.control.jumpRelease then
+				if self.velY > 0 and self.control.jumpRelease then
 					if self.control.left then 
 						self.control.left = nil
 						self.control.right = true
@@ -122,6 +126,9 @@ class "game" {
 		love.keypressed = function(key)
 			if key == self.key.jump then
 				self.sprite.samus.control.jump = true
+			end
+			if key == self.key.fire then
+				self.sprite.samus.control.fire = true
 			end
 		end
 		

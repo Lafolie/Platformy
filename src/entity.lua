@@ -4,8 +4,8 @@
 ]]
 
 class "entity" (sprite) {
-	__init__ = function(self, spriteset)
-		sprite.__init__(self, spriteset, width, height)
+	__init__ = function(self, spriteset, width, height)
+		sprite.__init__(self, spriteset)
 		
 		--unfinished bits
 		self.control = {}
@@ -250,7 +250,17 @@ class "entity" (sprite) {
 			end
 		end
 		
-		--don't bother jumping if there's a tile above
+		--fire the weapon
+		if self.control.fire and self.weapon then
+			local bulletDirectionX = self.direction == "left" and -1 or 1
+			self.weapon:fire(t, self.posX, self.posY, bulletDirectionX, 0)
+			self.control.fire = nil
+		end
+		--update the weapon & bullets
+		if self.weapon then
+			self.weapon:update(dt, t, map, offsetX, offsetY)
+		end
+		
 		
 		--finish up!
 		if self.velX == 0 and not(self.air) then self:setAnim("stand") end
@@ -263,6 +273,13 @@ class "entity" (sprite) {
 	end,
 	
 	draw = function(self)
+		--draw bullets
+		if self.weapon then
+			for k, bullet in ipairs(self.weapon.bullet) do
+				bullet:draw()
+			end
+		end
+		--draw self
 		sprite.draw(self)
 		love.graphics.setPointStyle("rough")
 		love.graphics.setColor(255, 255, 255, 255)
