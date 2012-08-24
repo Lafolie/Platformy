@@ -23,6 +23,10 @@ class "entity" (sprite) {
 	end,
 	
 	update = function(self, dt, t, map, offsetX, offsetY)
+		if self.ai then
+			self:ai()
+		end
+				
 		--badass pseudo physics (all hail Yuji Naka)
 		if not(self.controlLock) then
 			--apply voluntary movement

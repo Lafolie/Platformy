@@ -40,6 +40,25 @@ class "game" {
 		table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32)))
 		self.entity[1].posX = 102
 		self.entity[1].posY = 32
+		self.entity[1].control.right = true
+		self.entity[1].ai = function(self)
+			if self.velX == 0 then
+				self.control.jump = true
+				if self.velY > 0 then self.control.jumpRelease = true end
+				if self.velY < 0 then
+					if self.control.left then 
+						self.control.left = nil
+						self.control.right = true
+					else
+						self.control.left = true
+						self.control.right = nil
+					end
+				end
+			end
+--			if (self.control[direction] == true and self.velY > 0 then
+				
+		end
+			 
 		
 		--TEMP DATA, to be stored in files eventually
 		self.environment = {}
