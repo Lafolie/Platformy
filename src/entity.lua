@@ -4,10 +4,13 @@
 ]]
 
 class "entity" (sprite) {
-	__init__ = function(self, spriteset, width, height)
+	__init__ = function(self, spriteset, width, height, posX, posY)
 		sprite.__init__(self, spriteset)
 		
 		--unfinished bits
+		self.posX = posX or 0
+		self.posY = posY or 0
+		self.hp = 99
 		self.control = {}
 		self.velX = 0 --horizontal velocity
 		self.maxVelX = 100 --max x velocity
@@ -22,11 +25,11 @@ class "entity" (sprite) {
 		self.height = height or self.width --these are used for collisions
 	end,
 	
-	update = function(self, dt, t, map, offsetX, offsetY)
+	update = function(self, dt, t, map, offsetX, offsetY, check)
 		if self.ai then
 			self:ai()
 		end
-				
+		
 		--badass pseudo physics (all hail Yuji Naka)
 		if not(self.controlLock) then
 			--apply voluntary movement
@@ -69,6 +72,11 @@ class "entity" (sprite) {
 			end
 		else
 			self.control = {} --unable to move oneself, so remove voluntary responses
+			if t - self.lockTime >= self.lockFree then
+				self.controlLock = nil
+				self.lockFree = nil
+				self.lockTime = nil
+			end
 		end
 		
 		if not(self.control.left) and not(self.control.right) then
@@ -253,12 +261,11 @@ class "entity" (sprite) {
 		--fire the weapon
 		if self.control.fire and self.weapon then
 			local bulletDirectionX = self.direction == "left" and -1 or 1
-			self.weapon:fire(t, self.posX, self.posY, bulletDirectionX, 0)
---			self.control.fire = nil
+			self.control.fire = self.weapon:fire(t, self.posX, self.posY, bulletDirectionX, 0)
 		end
 		--update the weapon & bullets
 		if self.weapon then
-			self.weapon:update(dt, t, map, offsetX, offsetY)
+			self.weapon:update(dt, t, map, offsetX, offsetY, check)
 		end
 		
 		
@@ -269,6 +276,11 @@ class "entity" (sprite) {
 		
 		self.posX = self.posX + self.velX * dt
 		self.posY = self.posY + self.velY * dt
+		
+		--check for dead
+		if self.hp <= 0 then
+			self.kill = true
+		end
 		sprite.update(self, dt, t, offsetX, offsetY) --update graphics
 	end,
 	
@@ -284,6 +296,12 @@ class "entity" (sprite) {
 		love.graphics.setPointStyle("rough")
 		love.graphics.setColor(255, 255, 255, 255)
 		love.graphics.point(self.dxdot or 0, self.posY)
+	end,
+	
+	lock = function(self, time)
+		self.controlLock = true
+		self.lockTime = love.timer.getTime()
+		self.lockFree = time
 	end,
 	
 	--This is more compact:

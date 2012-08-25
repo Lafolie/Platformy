@@ -37,10 +37,11 @@ class "game" {
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
-		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 0.1)
+		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1, 3)
 		
 		--self.sprite.samus.scroll = true
 		--TEMPORARY SAX
+		self.spawnTime = love.timer.getTime()
 		table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32)))
 		self.entity[1].posX = 102
 		self.entity[1].posY = 32
@@ -159,7 +160,7 @@ class "game" {
 			self.tmap:update(dt, t)
 			--update player
 			for k, sprite in pairs(self.sprite) do
-				sprite:update(dt, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY)
+				sprite:update(dt, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY, self.entity)
 			end
 			--smoothing factor. Used to smooth out the scrolling effect
 			self.smooth[self.smoothIndex] = {}
@@ -179,9 +180,33 @@ class "game" {
 			self.smoothIndex = self.smoothIndex + 1 <= self.smoothFactor and self.smoothIndex + 1 or 1
 --			smoothOffset.x = 0
 --			smoothOffset.y = 0
+			--spawn stuff
+			if # self.entity < 13 and t - self.spawnTime > 1 then
+				self.spawnTime = t
+				table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32), 16, 16, 102, 32))
+				self.entity[# self.entity].control.right = true
+				self.entity[# self.entity].ai = function(self)
+					print(self.velX)
+					if self.velX == 0 then
+						self.control.jump = true
+						if self.velY > 90 then self.control.jumpRelease = true end
+						if self.velY > 0 and self.control.jumpRelease then
+							if self.control.left then 
+								self.control.left = nil
+								self.control.right = true
+							else
+								self.control.left = true
+								self.control.right = nil
+							end
+						end
+					end
+				end
+			end
+
 			--update entities
 			for k, entity in ipairs(self.entity) do
-				entity:update(dt, t, self.tmap, smoothOffset.x + self.offsetX, smoothOffset.y + self.offsetY)
+				entity:update(dt, t, self.tmap, smoothOffset.x + self.offsetX, smoothOffset.y + self.offsetY, self.entity)
+				if entity.kill then table.remove(self.entity, k) end
 			end
 			
 			--update the drawing position of the map
@@ -196,6 +221,7 @@ class "game" {
 		self.tmap:draw()
 		for k, sprite in pairs(self.sprite) do
 			sprite:draw()
+			love.graphics.print(sprite.hp, 1, 1)
 		end
 		for k, entity in ipairs(self.entity) do
 			entity:draw()

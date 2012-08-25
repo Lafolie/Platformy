@@ -15,8 +15,8 @@ class "sprite" {
 		self.time = love.timer.getTime()
 		self.currentFrame = 1
 		self.color = {255, 255, 255, 255}
-		self.drawX = 0 --screen location
-		self.drawY = 0
+		self.drawX = posX or 0 --screen location
+		self.drawY = posY or 0
 		self.offsetX = 0
 		self.offsetY = 0
 		self.direction = "right"
