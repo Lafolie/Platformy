@@ -13,7 +13,7 @@ class "weapon" {
 		self.cool = cool or 0.1 --weapon cooldown
 		self.time = love.timer.getTime()
 		self.fireMode = fireMode
-		self.burst = 0
+		if type(self.fireMode) == "number" then self.burst = 0 end
 		self.damage = damage or 25
 	end,
 	
