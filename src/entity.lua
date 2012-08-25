@@ -177,7 +177,6 @@ class "entity" (sprite) {
 				local hm = map:heightMap(worldX, worldY)
 				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
 				local hmB = hm and hm[hmId] or 0
-				print("RAMPOFF-" .. math.max(hmA, hmB) .. " hmA-" .. hmA .. " hmB-" .. hmB)
 				--prevent snapping from above
 				if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
 					self.velY = self.velY + map.env.gravity * dt
@@ -265,6 +264,7 @@ class "entity" (sprite) {
 		end
 		--update the weapon & bullets
 		if self.weapon then
+			if self.weapon.burst and not self.control.fire then self.weapon.burst = 0 end
 			self.weapon:update(dt, t, map, offsetX, offsetY, check)
 		end
 		

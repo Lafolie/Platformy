@@ -32,7 +32,6 @@ class "bullet" (sprite) {
 		if map:pass(x, y) then
 			self.kill = true
 		end
-		print("BULLET-" .. self.posX)
 		sprite.update(self, dt, t, offsetX, offsetY)
 	end,
 	

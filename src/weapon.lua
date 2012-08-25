@@ -8,7 +8,7 @@ class "weapon" {
 		self.spawnOffsetX = spawnOffsetX or 0
 		self.spawnOffsetY = spawnOffsetY or 0 --these cause the bullet to spawn in line with the users' sprite
 		self.bulletSpr = bulletSpr or spriteset("spr/power.png", 4, 5)
-		self.spawnVelX = spawnVelX or 200
+		self.spawnVelX = spawnVelX or 250
 		self.spawnVelY = spawnVelY or self.spawnVelX
 		self.cool = cool or 0.1 --weapon cooldown
 		self.time = love.timer.getTime()
@@ -38,7 +38,6 @@ class "weapon" {
 			local newBullet = bullet(self.bulletSpr, posX + (self.spawnOffsetX * velX), posY + self.spawnOffsetY, self.spawnVelX * velX, self.spawnVelY * velY, self.damage)
 			table.insert(self.bullet, newBullet)
 			self.time = t
-			print("Fire! " .. tostring(fire))
 		end
 		local fire = true
 		if self.fireMode == "semi" then

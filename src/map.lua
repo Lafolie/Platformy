@@ -12,13 +12,13 @@ class "map" {
 		self.posY = 0
 		self.env = environment or {["friction"] = 1000, ["gravity"] = 600, ["tileSize"] = 16}
 		
-		self.batch = love.graphics.newSpriteBatch(tileset.img, 1000)
+		self.batch = love.graphics.newSpriteBatch(tileset.img, 9000)
 		self.animatedTiles = {}
 		
-		self.batch:bind()
 		--Draw the map
 		print("Raw data for " .. self.name)
 		local renderTime = love.timer.getMicroTime()
+		self.batch:bind()
 		for y = 0, # layout - 1 do
 			for x = 0, # layout[y + 1] - 1 do
 				local currentTile = tileset.tile[layout[y + 1][x + 1]]
