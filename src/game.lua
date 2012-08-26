@@ -20,10 +20,10 @@ class "game" {
 		love.graphics.setDefaultImageFilter("nearest", "nearest")
 		self.saveGame = {progress = {}, items = {}, energy = 99, missile = 0, location = {0, 0}}
 		self.mode = "map"
-		self.key = {up = "w", down = "s", left = "a", right = "d", jump = " ", fire = ";"}
+		self.key = {up = "w", down = "s", left = "a", right = "d", jump = "/", fire = "."}
 		self.offsetX = (love.graphics.getWidth() / 2) / 2
 		self.offsetY = (love.graphics.getHeight() / 2) / 2
-		love.graphics.setIcon(love.graphics.newImage("spr/platformy.png"))
+		love.graphics.setIcon(love.graphics.newImage("spr/bleep.png"))
 
 		--Graphic content
 		self.entity = {}
@@ -37,14 +37,14 @@ class "game" {
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
-		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.05, 5)
+		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1)
 		
-		--self.sprite.samus.scroll = true
 		--TEMPORARY SAX
 		self.spawnTime = love.timer.getTime()
 		table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32)))
 		self.entity[1].posX = 102
 		self.entity[1].posY = 32
+		self.entity[1].color = {255, 100, 255, 255}
 		self.entity[1].control.right = true
 		self.entity[1].ai = function(self)
 			if self.velX == 0 then
@@ -126,6 +126,21 @@ class "game" {
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}, --testing pit
+							{2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 1, 1, 1, 1, 1, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
@@ -192,22 +207,7 @@ class "game" {
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}, -- :(
 							{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							
 						}
@@ -243,6 +243,8 @@ class "game" {
 				self.key.down = self.key.down == "down" and "s" or "down"
 				self.key.left = self.key.left == "left" and "a" or "left"
 				self.key.right = self.key.right == "right" and "d" or "right"
+				self.key.jump = self.key.jump == "x" and "/" or "x"
+				self.key.fire = self.key.fire == "z" and "." or "z"
 			end
 			if key == self.key.jump then self.sprite.samus.control.jumpRelease = true end
 			if key == self.key.fire then self.sprite.samus.control.fire = nil end
@@ -277,7 +279,7 @@ class "game" {
 --			smoothOffset.x = 0
 --			smoothOffset.y = 0
 			--spawn stuff
-			if # self.entity < 13 and t - self.spawnTime > 0.25 then
+			if # self.entity < 4 and t - self.spawnTime > 2.5 then
 				self.spawnTime = t
 				table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32), 16, 16, 102, 32))
 				local newDirection = "right"
@@ -285,6 +287,7 @@ class "game" {
 					newDirection = "left"
 				end
 				self.entity[# self.entity].control[newDirection] = true
+				self.entity[# self.entity].color = {255, 100, 255, 255}
 				self.entity[# self.entity].ai = function(self)
 					local toggleDirection = function()
 						if self.control.left then 
@@ -310,6 +313,10 @@ class "game" {
 				end
 			end
 
+			--update player BARTBES HACK
+			for k, sprite in pairs(self.sprite) do
+				sprite:update(0, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY, self.entity)
+			end
 			--update entities
 			for k, entity in ipairs(self.entity) do
 				entity:update(dt, t, self.tmap, smoothOffset.x + self.offsetX, smoothOffset.y + self.offsetY, self.entity)
@@ -331,7 +338,7 @@ class "game" {
 		self.tmap:draw()
 		for k, sprite in pairs(self.sprite) do
 			sprite:draw()
-			love.graphics.print(sprite.hp, 1, 1)
+			--love.graphics.print(sprite.hp, 1, 1)
 		end
 		for k, entity in ipairs(self.entity) do
 			entity:draw()
@@ -352,6 +359,7 @@ class "game" {
 			local x, y = self.sprite.samus:getWorld(1, 15, self.tmap.env.tileSize, self.tmap)
 			love.graphics.print(x .. " " .. y, 175, 1)
 			love.graphics.print("X-" .. self.sprite.samus.posX .. " Y-" .. self.sprite.samus.posY, 1, 17)
+			love.graphics.print("hmA-" .. tostring(self.sprite.samus.hmA) .. " hmB-" .. tostring(self.sprite.samus.hmB), 215, 17)
 		end	
 	end,
 	
