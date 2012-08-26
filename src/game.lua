@@ -222,7 +222,7 @@ class "game" {
 		--Core variables and surch
 		local t = love.timer.getTime()
 		love.keypressed = function(key)
-			if key == self.key.jump then
+			if key == self.key.jump and not self.sprite.samus.jump then
 				self.sprite.samus.control.jump = true
 			end
 			if key == self.key.fire then
