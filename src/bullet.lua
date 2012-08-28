@@ -4,21 +4,25 @@
 ]]
 
 class "bullet" (sprite) {
-	__init__ = function(self, spriteset, posX, posY, velX, velY, damage)
+	__init__ = function(self, spriteset, posX, posY, velX, velY, damage, direction)
 		sprite.__init__(self, spriteset, {stand = {{1, 0}}}, posX, posY)
 		self.velX = velX or 0
 		self.velY = velY or 0
 		self.damage = damage
+		self.direction = direction or "right"
 		self.hp = 1
 	end,
 	
 	update = function(self, dt, t, map, offsetX, offsetY, check)
+		if self.gravity then
+			self.velY = self.velY + map.env.gravity * dt
+		end
 		self.posX = self.posX + self.velX * dt
 		self.posY = self.posY + self.velY * dt
 		
 		local x, y =  math.ceil(self.posX / map.env.tileSize), math.ceil(self.posY / map.env.tileSize)
-		x = math.max(math.min(x, # map.layout[y]), 1)
 		y = math.max(math.min(y, # map.layout), 1)
+		x = math.max(math.min(x, # map.layout[y]), 1)
 		
 		--check for collisions with entities
 		for k, entity in ipairs(check) do
