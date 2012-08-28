@@ -66,7 +66,7 @@ class "entity" (sprite) {
 					self.jmpDisable = nil
 				end
 				
-				if self.control.jump and self.control.jumpRelease then
+				if self.control.jumpRelease then
 					self.control.jump = nil
 					self.control.jumpRelease = nil
 				end
@@ -275,7 +275,7 @@ class "entity" (sprite) {
 				if self.weapon.burst and not self.control.fire then self.weapon.burst = 0 end
 				self.weapon:update(dt, t, map, offsetX, offsetY, check)
 			end
-		end--DTEND
+		end--end dt check hack fix glitch bug crap stupid
 		
 		--finish up!
 		if self.velX == 0 and not(self.air) then self:setAnim("stand") end

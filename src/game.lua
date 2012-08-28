@@ -221,34 +221,6 @@ class "game" {
 	update = function(self, dt)
 		--Core variables and surch
 		local t = love.timer.getTime()
-		love.keypressed = function(key)
-			if key == self.key.jump and not self.sprite.samus.jump then
-				self.sprite.samus.control.jump = true
-			end
-			if key == self.key.fire then
-				self.sprite.samus.control.fire = true
-			end
-		end
-		
-		love.keyreleased = function(key)
-			if key == "escape" then love.event.push("quit") end
-			if key == "f1" then debugMode = not(debugMode)  end
-			if key == "f2" then
-				self.scale = self.scale >=  4 and 1 or self.scale + 1
-				love.graphics.setMode(self.scale * 320, self.scale * 240, nil, true, 0)
-			end
-			if key == "f3" then love.graphics.toggleFullscreen() end
-			if key == "f4" then 
-				self.key.up = self.key.up == "up" and "w" or "up"
-				self.key.down = self.key.down == "down" and "s" or "down"
-				self.key.left = self.key.left == "left" and "a" or "left"
-				self.key.right = self.key.right == "right" and "d" or "right"
-				self.key.jump = self.key.jump == "x" and "/" or "x"
-				self.key.fire = self.key.fire == "z" and "." or "z"
-			end
-			if key == self.key.jump then self.sprite.samus.control.jumpRelease = true end
-			if key == self.key.fire then self.sprite.samus.control.fire = nil end
-		end
 		
 		if self.mode == "map" then
 			--Temp stuff
