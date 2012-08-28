@@ -18,7 +18,8 @@ class "weapon" {
 	end,
 	
 	update = function(self, dt, t, map, offsetX, offsetY, check)
-		for k, bullet in ipairs(self.bullet) do
+		for k = #self.bullet, 1, -1 do
+			local bullet = self.bullet[k]
 			bullet:update(dt, t, map, offsetX, offsetY, check)
 			if bullet.kill then table.remove(self.bullet, k) end
 		end
@@ -56,4 +57,3 @@ class "weapon" {
 		return fire
 	end
 }
-		

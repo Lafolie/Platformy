@@ -321,7 +321,8 @@ class "game" {
 				sprite:update(0, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY, self.entity)
 			end
 			--update entities
-			for k, entity in ipairs(self.entity) do
+			for k = #self.entity, 1, -1 do
+				local entity = self.entity[k]
 				entity:update(dt, t, self.tmap, smoothOffset.x + self.offsetX, smoothOffset.y + self.offsetY, self.entity)
 				if entity.kill then 
 					table.remove(self.entity, k) 
@@ -371,4 +372,3 @@ class "game" {
 		table.insert(self.entity, sprite("spr/samus.png"), 25, 32)
 	end
 }
-					
