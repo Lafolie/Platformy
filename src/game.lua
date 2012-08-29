@@ -341,6 +341,7 @@ class "game" {
 		self.tmap:draw()
 		for k, sprite in pairs(self.sprite) do
 			sprite:draw()
+			love.graphics.line(0, self.sprite.samus.drawY - 1, 320, self.sprite.samus.drawY - 1)
 			--love.graphics.print(sprite.hp, 1, 1)
 		end
 		for k, entity in ipairs(self.entity) do

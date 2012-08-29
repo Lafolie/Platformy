@@ -53,11 +53,13 @@ class "entity" (sprite) {
 				
 				--jumping
 				if self.control.jump and not(self.air) then
-					local worldX, worldY = self:getWorld(-self.width / 4, -map.env.tileSize + 1, map.env.tileSize, map)
-					local worldX2 = self:getWorld(self.width / 4, -map.env.tileSize + 1, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(-self.width / 4, -1, map.env.tileSize, map)
+					local worldX2 = self:getWorld(self.width / 4, -1, map.env.tileSize, map)
 					if not map:pass(worldX, worldY - 1) and not map:pass(worldX2, worldY - 1) then
 						self.velY = self.jmpDisable and self.velY or self.jmp
 						self.jmpDisable = true
+					else
+						self.control.jump = nil
 					end
 				end
 				
@@ -190,6 +192,7 @@ class "entity" (sprite) {
 						if (hmA == 0 and hmB == 0) and self.velY > 0 then 
 							--the magick fix
 							--prevents the bug whereby the entity gets stuck on the corner of the block
+							self.velY = self.velY + (2 * map.env.gravity) * dt
 						else
 							self.posY = (worldY - 1) * map.env.tileSize - math.max(hmA, hmB)
 							self.velY = 0 
