@@ -37,7 +37,7 @@ class "game" {
 		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
-		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1)
+		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1, "semi")
 		
 		--TEMPORARY SAX
 		self.spawnTime = love.timer.getTime()
@@ -109,7 +109,7 @@ class "game" {
 							{2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2, 2, 2},
 							{2, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2},
 							{2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 4, 1, 3, 2, 2, 1, 2},
-							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2},
+							{2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 							{2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},

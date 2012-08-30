@@ -11,6 +11,8 @@ class "bullet" (sprite) {
 		self.damage = damage
 		self.direction = direction or "right"
 		self.hp = 1
+		self.afterImage.frame = 2
+		self.afterImage.count = 0.05
 	end,
 	
 	update = function(self, dt, t, map, offsetX, offsetY, check)

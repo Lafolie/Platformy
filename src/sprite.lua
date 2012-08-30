@@ -22,9 +22,9 @@ class "sprite" {
 		self.direction = "right"
 		self.afterImage = {}
 		self.afterImage.pos = {}
-		self.afterImage.num = 5
+		self.afterImage.fade = 500
 		self.afterImage.alpha = 255
-		self.afterImage.count = 1
+		self.afterImage.count = 0.1
 		self.afterImage.time = love.timer.getTime()
 		self.enableAfterImages = true
 	end,
@@ -58,14 +58,16 @@ class "sprite" {
 		if self.afterImage then
 			if self.enableAfterImages then
 				if t - self.afterImage.time >= self.afterImage.count then
-					local afterImage = {x = self.drawX, y = self.drawY, alpha = self.afterImage.alpha, frame = self.currentFrame, scale = self.scaleX}
+					local afterImage = {posX = self.posX - w / 2, posY = self.posY - h / 2, alpha = self.afterImage.alpha, frame = self.afterImage.frame or self.currentFrame, scaleX = self.scaleX, scaleY = self.scaleY, originX = self.originX, originY = self.originY}
 					table.insert(self.afterImage.pos, afterImage)
 					self.afterImage.time = t
 				end
 			end
 			for k = # self.afterImage.pos, 1, -1 do
 				local afterImage = self.afterImage.pos[k]
-				afterImage.alpha = afterImage.alpha - 1 * dt
+				afterImage.drawX = afterImage.posX + offsetX
+				afterImage.drawY = afterImage.posY + offsetY
+				afterImage.alpha = afterImage.alpha - self.afterImage.fade * dt
 				if afterImage.alpha <= 0 then table.remove(self.afterImage.pos, k) end
 			end
 		end
@@ -75,10 +77,10 @@ class "sprite" {
 	draw = function(self)
 		--draw after images
 		for k, afterImage in ipairs(self.afterImage.pos) do
-			love.graphics.setColor(255, 255, 255, afterImage.alpha)
-			love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[afterImage.frame], afterImage.x, afterImage.y, 0, afterImage.scale)
+			love.graphics.setColor(self.color[1], self.color[2], self.color[3], afterImage.alpha)
+			love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[afterImage.frame], afterImage.drawX, afterImage.drawY, 0, afterImage.scaleX, afterImage.scaleY, afterImage.originX, afterImage.originY)
 		end
-		
+		--draw quad
 		love.graphics.setColor(self.color)
 		love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[self.currentFrame], self.drawX, self.drawY, 0, self.scaleX, self.scaleY, self.originX, self.originY)
 		--debug stuff--------------------------------------
