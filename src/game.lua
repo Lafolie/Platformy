@@ -34,7 +34,7 @@ class "game" {
 		self.smooth = {}
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
 		--TEMPORARY SAMUS
-		self.sprite.samus = entity(spriteset("spr/samus.png", 25, 32))
+		self.sprite.samus = entity(spriteset("spr/samus2.png", 25, 39))
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
 		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1, "semi")
