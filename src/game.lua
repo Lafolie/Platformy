@@ -34,10 +34,11 @@ class "game" {
 		self.smooth = {}
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
 		--TEMPORARY SAMUS
-		self.sprite.samus = entity(spriteset("spr/samus2.png", 25, 39))
+		local saxAnim = {stand = {{1, 0}}, run = {{3, 0.075}, {4, 0.075}, {5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}}, jump = {{13, 0}}}
+		self.sprite.samus = entity(spriteset("spr/saxSamus.png", 31, 37), saxAnim)
 		self.sprite.samus.posX = 112
 		self.sprite.samus.posY = 32
-		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1, "semi")
+		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -2, 33, 0.1, "semi")
 		
 		--TEMPORARY SAX
 		self.spawnTime = love.timer.getTime()
@@ -90,7 +91,7 @@ class "game" {
 		local tempmap = {
 							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15},
 							{15, 6, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 5, 15},
-							{15, 16, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15},
+							{15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15},
 							{15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15},
 							{15, 16, 17, 1, 1, 1, 1, 1, 24, 1, 1, 12, 1, 1, 1, 1, 1, 1, 14, 15},
 							{15, 16, 17, 1, 1, 1, 1, 1, 30, 36, 36, 18, 1, 1, 1, 1, 1, 1, 14, 15},
@@ -144,9 +145,9 @@ class "game" {
 --			smoothOffset.x = 0
 --			smoothOffset.y = 0
 			--spawn stuff
-			if # self.entity < 4 and t - self.spawnTime > 2.5 then
+			if # self.entity < 1 and t - self.spawnTime > 2.5 then
 				self.spawnTime = t
-				table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32), 16, 16, 102, 32))
+				table.insert(self.entity, entity(spriteset("spr/samus.png", 25, 32), nil, 16, 16, 102, 32))
 				local newDirection = "right"
 				if # self.entity % 2 == 0 then
 					newDirection = "left"

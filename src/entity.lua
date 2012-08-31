@@ -4,8 +4,8 @@
 ]]
 
 class "entity" (sprite) {
-	__init__ = function(self, spriteset, width, height, posX, posY)
-		sprite.__init__(self, spriteset)
+	__init__ = function(self, spriteset, animation, width, height, posX, posY)
+		sprite.__init__(self, spriteset, animation, posX, posY)
 		
 		--unfinished bits
 		self.posX = posX or 0
