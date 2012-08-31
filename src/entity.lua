@@ -97,12 +97,7 @@ class "entity" (sprite) {
 							
 				--LEFT SENSOR
 				local worldX, worldY = self:getWorld(-w - 1, h / 2, map.env.tileSize, map)
-				--debug
-				if debugMode then
-					self.dxdot = (worldX * map.env.tileSize)
-				end
-				--/debug 
-				if (map:pass(worldX, worldY) or 0) >= 2 and not(self.ramp) then
+				if (map:pass(worldX, worldY) or 0) >= 2 then --and not(self.ramp) then
 					if self.velX < 0 then
 						self.velX = 0
 						self.posX = (worldX * map.env.tileSize) + w
@@ -112,7 +107,7 @@ class "entity" (sprite) {
 				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 					if self.velX < 0 then
 						self.velX = 0
-										self.posX = (worldX * map.env.tileSize) + w
+						self.posX = (worldX * map.env.tileSize) + w
 	
 					end
 				end
@@ -122,7 +117,7 @@ class "entity" (sprite) {
 				if debugMode then
 					self.dxdot = (worldX * map.env.tileSize)
 				end
-				if (map:pass(worldX, worldY) or 10) <= 2 and not(self.ramp) then --only collide if it's a true solid tile
+				if (map:pass(worldX, worldY) or 10) <= 2 then --and not(self.ramp) then --only collide if it's a true solid tile
 					if self.velX > 0 then
 						self.velX = 0
 						self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
