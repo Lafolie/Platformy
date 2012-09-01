@@ -23,8 +23,8 @@ class "bullet" (sprite) {
 		self.posY = self.posY + self.velY * dt
 		
 		local x, y =  math.ceil(self.posX / map.env.tileSize), math.ceil(self.posY / map.env.tileSize)
-		y = math.max(math.min(y, # map.layout), 1)
-		x = math.max(math.min(x, # map.layout[y]), 1)
+		y = math.max(math.min(y, # map.layout[2]), 1)
+		x = math.max(math.min(x, # map.layout[2][y]), 1)
 		
 		--check for collisions with entities
 		for k, entity in ipairs(check) do

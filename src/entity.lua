@@ -4,10 +4,11 @@
 ]]
 
 class "entity" (sprite) {
-	__init__ = function(self, spriteset, animation, width, height, posX, posY)
+	__init__ = function(self, name, spriteset, animation, width, height, posX, posY)
 		sprite.__init__(self, spriteset, animation, posX, posY)
 		
 		--unfinished bits
+		self.name = name or "New Entity"
 		self.posX = posX or 0
 		self.posY = posY or 0
 		self.hp = 99
@@ -201,14 +202,14 @@ class "entity" (sprite) {
 	
 				--celings
 				if self.air then
-					local worldX, worldY = self:getWorld(-w / 4, -map.env.tileSize + 1, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(-w / 4, -h * 2 + 1, map.env.tileSize, map)
 					local senC, senD = true, true --ground sensors
 					
 					if map:pass(worldX, worldY) then
 						senC = nil
 					end
 					
-					local worldX, worldY = self:getWorld(w / 4, -map.env.tileSize + 1, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(w / 4, -h * 2 + 1, map.env.tileSize, map)
 					if map:pass(worldX, worldY) then
 						senD = nil
 					end
@@ -327,8 +328,8 @@ class "entity" (sprite) {
 	
 	getWorld = function(self, offX, offY, tileSize, map)
 		local x, y =  math.ceil((self.posX + offX) / tileSize), math.ceil((self.posY + offY) / tileSize)
-		x = math.max(math.min(x, # map.layout[y]), 1)
-		y = math.max(math.min(y, # map.layout), 1)
+		x = math.max(math.min(x, # map.layout[2][y]), 1)
+		y = math.max(math.min(y, # map.layout[2]), 1)
 		return x, y
 	end		
 }			
