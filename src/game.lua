@@ -69,7 +69,7 @@ class "game" {
 		--TEMP DATA, to be stored in files eventually
 		self.environment = {}
 		self.environment.friction = 1000
-		self.environment.gravity = 600
+		self.environment.gravity = 800
 		self.environment.tileSize = 16
 		
 		local clip = tileProperties(2)
@@ -151,11 +151,12 @@ class "game" {
 		--Core variables and surch
 		local t = love.timer.getTime()
 		
+		--temporary state replacement
 		if self.mode == "map" then
 			--Temp stuff
 			if love.keyboard.isDown(self.key.left) then self.sprite.samus.control.left = true else self.sprite.samus.control.left = nil end
 			if love.keyboard.isDown(self.key.right) then self.sprite.samus.control.right = true else self.sprite.samus.control.right = nil end
-			
+			if love.keyboard.isDown(self.key.jump) then self.sprite.samus.control.jumpPress = true else self.sprite.samus.control.jumpPress = nil end
 			--player2test
 			self.tmap:update(dt, t)
 			--update player

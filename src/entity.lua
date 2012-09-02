@@ -20,7 +20,7 @@ class "entity" (sprite) {
 		self.accel = 1000 --horizontal acceleration
 		self.decel = 1000 --horizontal deceleration
 		self.airAc = 2000
-		self.jmp = -250 --vertical acceleration
+		self.jmp = -300 --vertical acceleration
 		
 		self.width = width or 16
 		self.height = height or self.width --these are used for collisions
@@ -60,7 +60,7 @@ class "entity" (sprite) {
 						self.velY = self.jmpDisable and self.velY or self.jmp
 						self.jmpDisable = true
 					else
-						self.control.jump = nil
+						--self.control.jump = nil
 					end
 				end
 				
@@ -104,6 +104,11 @@ class "entity" (sprite) {
 					end
 					self.posX = (worldX * map.env.tileSize) + w
 					
+					--check for wall jump
+					if (self.air and not self.jmpDisable) and self.control.jumpPress and self.control.right and not self.control.left then
+						self.velY = self.jmp * 0.90
+						self.jmpDisable = true
+					end
 				end
 				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 					if self.velX < 0 then
@@ -122,6 +127,12 @@ class "entity" (sprite) {
 						self.velX = 0
 					end
 					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
+					
+					--check for wall jump
+					if (self.air and not self.jmpDisable) and self.control.jumpPress and self.control.left and not self.control.right then
+						self.velY = self.jmp * 0.90
+						self.jmpDisable = true
+					end
 				end
 				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 					if self.velX > 0 then
