@@ -208,12 +208,12 @@ class "entity" (sprite) {
 				if self.velY < 0 then
 					local senC, senD = true, true --ground sensors
 					
-					local worldX, worldY = self:getWorld(-w / 4, -h * 2 - self.offsetY2, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(-w / 4, -h * 2 - 1, map.env.tileSize, map)
 					if map:pass(worldX, worldY) then
 						senC = nil
 					end
 					
-					local worldX, worldY = self:getWorld(w / 4, -h * 2 - self.offsetY2, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(w / 4, -h * 2 - 1, map.env.tileSize, map)
 					if map:pass(worldX, worldY) then
 						senD = nil
 					end
