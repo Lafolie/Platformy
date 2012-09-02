@@ -28,7 +28,7 @@ class "bullet" (sprite) {
 		
 		--check for collisions with entities
 		for k, entity in ipairs(check) do
-			if entity.collidePoint(self.posX, self.posY, entity.posX - entity.width / 2, entity.posY - entity.height / 2, entity.width, entity.height * 1.25) then
+			if entity.collidePoint(self.posX, self.posY, entity.posX - entity.width, entity.posY - entity.height, entity.width, entity.height) then
 				entity:lock(0.25)
 				entity.hp = entity.hp - self.damage
 				entity.velX = self.velX

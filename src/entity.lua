@@ -283,7 +283,7 @@ class "entity" (sprite) {
 		--finish up!
 		if self.velX == 0 and not(self.air) then self:setAnim("stand") end
 		if self.air and self.jmpDisable then self:setAnim("jump") end
-		if self.air and not(self.jmpDisable) and math.abs(self.velY) > 85  then self:setAnim("stand") end
+		if self.air and not(self.jmpDisable) and math.abs(self.velY) > 85  then self:setAnim("jump") end
 		
 		self.posX = self.posX + self.velX * dt
 		self.posY = self.posY + self.velY * dt
