@@ -27,9 +27,11 @@ class "entity" (sprite) {
 	end,
 	
 	update = function(self, dt, t, map, offsetX, offsetY, check)
+		--execute ai scripts
 		if self.ai then
 			self:ai()
 		end
+		
 		if dt ~= 0 then
 			--badass pseudo physics (all hail Yuji Naka)
 			if not(self.controlLock) then
@@ -134,9 +136,9 @@ class "entity" (sprite) {
 				
 				--gravitah (respect my)			
 				--sensory
-				local worldX, worldY = self:getWorld(-w * 0.25, map.env.tileSize + 1, map.env.tileSize, map)
+				local worldX, worldY = self:getWorld(-w * 0.25, h * 2 + 1, map.env.tileSize, map)
 				local senA = map:pass(worldX, worldY)
-				local worldX, worldY = self:getWorld(w * 0.25, map.env.tileSize + 1, map.env.tileSize, map)
+				local worldX, worldY = self:getWorld(w * 0.25, h * 2 + 1, map.env.tileSize, map)
 				local senB = map:pass(worldX, worldY)
 							
 				--actuate
@@ -181,16 +183,18 @@ class "entity" (sprite) {
 					if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
 						self.velY = self.velY + map.env.gravity * dt
 						self.air = true
-					elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then
-						self.posX = (worldX - 1) * map.env.tileSize - w
+--					elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then
+--						self.posX = (worldX - 1) * map.env.tileSize - w
 					else
 						--set to height of ramp/stair
 						if (hmA == 0 and hmB == 0) and self.velY > 0 then 
 							--the magick fix
 							--prevents the bug whereby the entity gets stuck on the corner of the block
 							self.velY = self.velY + (2 * map.env.gravity) * dt
+--						elseif (hmA == 0 and hmB == 1) or (hmA == 1 and hmB == 0) then
+--							self.posY = self.posY + 1
 						else
-							self.posY = (worldY - 1) * map.env.tileSize - math.max(hmA, hmB)
+							self.posY = (worldY - 1) * map.env.tileSize - (hmA + hmB) / 2 --math.max(hmA, hmB)
 							self.velY = 0 
 							self.air = nil
 							self.ramp = true
@@ -201,15 +205,15 @@ class "entity" (sprite) {
 				end
 	
 				--celings
-				if self.air then
-					local worldX, worldY = self:getWorld(-w / 4, -h * 2 + 1, map.env.tileSize, map)
+				if self.velY < 0 then
 					local senC, senD = true, true --ground sensors
 					
+					local worldX, worldY = self:getWorld(-w / 4, -h * 2 - self.offsetY2, map.env.tileSize, map)
 					if map:pass(worldX, worldY) then
 						senC = nil
 					end
 					
-					local worldX, worldY = self:getWorld(w / 4, -h * 2 + 1, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(w / 4, -h * 2 - self.offsetY2, map.env.tileSize, map)
 					if map:pass(worldX, worldY) then
 						senD = nil
 					end
@@ -218,7 +222,7 @@ class "entity" (sprite) {
 						--somecode
 					elseif self.posY + self.velY < worldY * map.env.tileSize then
 						self.velY = 0
-						self.posY = (worldY	* map.env.tileSize) + map.env.tileSize - h * 0.25
+						self.posY = (worldY	* map.env.tileSize) + map.env.tileSize + self.offsetY2
 					end
 					
 					--special case for stairs ON THE CEILING (EXPERIMENTAL, DISABLED FOR NOW)
@@ -328,8 +332,8 @@ class "entity" (sprite) {
 	
 	getWorld = function(self, offX, offY, tileSize, map)
 		local x, y =  math.ceil((self.posX + offX) / tileSize), math.ceil((self.posY + offY) / tileSize)
-		x = math.max(math.min(x, # map.layout[2][y]), 1)
 		y = math.max(math.min(y, # map.layout[2]), 1)
+		x = math.max(math.min(x, # map.layout[2][y]), 1)
 		return x, y
 	end		
 }			

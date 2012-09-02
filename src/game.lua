@@ -34,18 +34,14 @@ class "game" {
 		self.smooth = {}
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
 		--TEMPORARY SAMUS
-		local saxAnim = {stand = {{1, 0}}, run = {{3, 0.075}, {4, 0.075}, {5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}}, jump = {{13, 0}}}
-		self.sprite.samus = entity("Samus", spriteset("spr/saxSamus.png", 31, 37), saxAnim)
-		self.sprite.samus.posX = 112
-		self.sprite.samus.posY = 32
+		self.saxAnim = {stand = {{1, 0}}, run = {{3, 0.075}, {4, 0.075}, {5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}}, jump = {{13, 0}}}
+		self.sprite.samus = entity("Samus", spriteset("spr/saxSamus.png", 31, 37), self.saxAnim, 16, 16, 112, 64)
 		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -2, 33, 0.1, "semi")
 --		self.sprite.samus.color = {255, 255, 255, 0}
 		
 		--TEMPORARY SAX
 		self.spawnTime = love.timer.getTime()
-		table.insert(self.entity, entity("SA-X", spriteset("spr/samus.png", 25, 32)))
-		self.entity[1].posX = 102
-		self.entity[1].posY = 32
+		table.insert(self.entity, entity("SA-X", spriteset("spr/saxSamus.png", 31, 37), self.saxAnim, 16, 16, 96, 64))
 		self.entity[1].color = {255, 100, 255, 255}
 		self.entity[1].control.right = true
 		self.entity[1].ai = function(self)
@@ -185,7 +181,7 @@ class "game" {
 			--spawn stuff
 			if # self.entity < 1 and t - self.spawnTime > 2.5 then
 				self.spawnTime = t
-				table.insert(self.entity, entity("SA-X", spriteset("spr/samus.png", 25, 32), nil, 16, 16, 102, 32))
+				table.insert(self.entity, entity("SA-X", spriteset("spr/saxSamus.png", 31, 37), self.saxAnim, 16, 16, 102, 64))
 				local newDirection = "right"
 				if # self.entity % 2 == 0 then
 					newDirection = "left"

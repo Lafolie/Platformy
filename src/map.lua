@@ -57,6 +57,8 @@ class "map" {
 	end,
 	
 	pass = function(self, x, y)
+		if y <= 0 or y > # self.layout[2] then return nil end
+		if x <= 0 or x > # self.layout[2][y] then return nil end
 		return self.tileset.tile[self.layout[2][y][x]].property.pass--return passability property of xy
 	end,
 	

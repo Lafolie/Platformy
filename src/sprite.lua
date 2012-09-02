@@ -19,6 +19,7 @@ class "sprite" {
 		self.drawY = posY or 0
 		self.offsetX = 0
 		self.offsetY = 0
+		self.offsetY2 = 0
 		self.direction = "right"
 		self.afterImage = {}
 		self.afterImage.pos = {}
@@ -38,9 +39,9 @@ class "sprite" {
 		local x, y, w, h = self.spriteset.sprite[self.currentFrame]:getViewport()
 		self.offsetX = offsetX or self.offsetX
 		self.offsetY = offsetY or self.offsetY
-		local offsetY2 = (h % 16) / 2
+		self.offsetY2 = (h % 16) / 2
 		self.drawX = self.posX - w / 2 + self.offsetX
-		self.drawY = self.posY - h / 2 + self.offsetY - offsetY2
+		self.drawY = self.posY - h / 2 + self.offsetY - self.offsetY2
 		
 		
 		if self.direction == "right" then
@@ -59,7 +60,7 @@ class "sprite" {
 		if self.afterImage then
 			if self.enableAfterImages then
 				if t - self.afterImage.time >= self.afterImage.count then
-					local afterImage = {posX = self.posX - w / 2, posY = self.posY - h / 2 - offsetY2, alpha = self.afterImage.alpha, frame = self.afterImage.frame or self.currentFrame, scaleX = self.scaleX, scaleY = self.scaleY, originX = self.originX, originY = self.originY}
+					local afterImage = {posX = self.posX - w / 2, posY = self.posY - h / 2 - self.offsetY2, alpha = self.afterImage.alpha, frame = self.afterImage.frame or self.currentFrame, scaleX = self.scaleX, scaleY = self.scaleY, originX = self.originX, originY = self.originY}
 					table.insert(self.afterImage.pos, afterImage)
 					self.afterImage.time = t
 				end
