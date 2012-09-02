@@ -14,7 +14,7 @@ class "entity" (sprite) {
 		self.hp = 99
 		self.control = {}
 		self.velX = 0 --horizontal velocity
-		self.maxVelX = 100 --max x velocity
+		self.maxVelX = 115 --max x velocity
 		self.velY = 0 --vertical velocity
 		self.maxVelY = 100 --max y velocity
 		self.accel = 1000 --horizontal acceleration
@@ -41,7 +41,6 @@ class "entity" (sprite) {
 					self.velX = self.velX <= 0 and math.max(self.velX - self.accel * dt, -self.maxVelX) or self.velX - self.decel * dt
 					if self.velX < 0 then 
 						self.direction = "left"
-						self:setAnim("run")
 					end
 		
 				end
@@ -50,7 +49,6 @@ class "entity" (sprite) {
 					self.velX = self.velX >= 0 and math.min(self.velX + self.accel * dt, self.maxVelX) or self.velX + self.decel * dt
 					if self.velX > 0 then
 						self.direction = "right"
-						self:setAnim("run")
 					end
 				end
 				
@@ -103,16 +101,15 @@ class "entity" (sprite) {
 				if (map:pass(worldX, worldY) or 0) >= 2 then --and not(self.ramp) then
 					if self.velX < 0 then
 						self.velX = 0
-						self.posX = (worldX * map.env.tileSize) + w
 					end
+					self.posX = (worldX * map.env.tileSize) + w
 					
 				end
 				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 					if self.velX < 0 then
 						self.velX = 0
-						self.posX = (worldX * map.env.tileSize) + w
-	
 					end
+					self.posX = (worldX * map.env.tileSize) + w
 				end
 				
 				--RIGHT SENSOR
@@ -123,15 +120,14 @@ class "entity" (sprite) {
 				if (map:pass(worldX, worldY) or 10) <= 2 then --and not(self.ramp) then --only collide if it's a true solid tile
 					if self.velX > 0 then
 						self.velX = 0
-						self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
 					end
+					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
 				end
 				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
 					if self.velX > 0 then
 						self.velX = 0
-						self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
-	
 					end
+					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
 				end
 				
 				--gravitah (respect my)			
@@ -281,8 +277,14 @@ class "entity" (sprite) {
 		end--end dt check hack fix glitch bug crap stupid
 		
 		--finish up!
+		--set animations
+		--running
+		if not self.air and (self.control.left or self.control.right) then self:setAnim("run") end
+		--standing still
 		if self.velX == 0 and not(self.air) then self:setAnim("stand") end
+		--jumping
 		if self.air and self.jmpDisable then self:setAnim("jump") end
+		--falling
 		if self.air and not(self.jmpDisable) and math.abs(self.velY) > 85  then self:setAnim("jump") end
 		
 		self.posX = self.posX + self.velX * dt

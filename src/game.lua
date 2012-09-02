@@ -35,7 +35,7 @@ class "game" {
 		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
 		--TEMPORARY SAMUS
 		self.saxAnim = {stand = {{1, 0}}, run = {{3, 0.075}, {4, 0.075}, {5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}}, jump = {{13, 0}}}
-		local newAnim = {stand = {{1, 0.15}, {2, 0.15}, {3, 0.15}, {4, 0.15}}, run = {{5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}, {13, 0.075}, {14, 0.075}}, jump = {{16, 0.15}, {17, 0.15}, {18, 0.15}, {19, 0.15}, {15, 0.16}}, fall = {{15, 0}}}
+		local newAnim = {stand = {{1, 0.15}, {2, 0.15}, {3, 0.15}, {4, 0.15}}, run = {{5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}, {13, 0.075}, {14, 0.075}}, jump = {{16, 0.15}, {17, 0.15}, {18, 0.15}, {19, 0.15}, {15, 0.15}}, fall = {{19, 0.15}, {15, 0}}}
 		self.sprite.samus = entity("Samus", spriteset("spr/fullsuit.png", 36, 40), newAnim, 16, 16, 112, 64)
 		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 18, -9, 33, 0.1, "semi")
 --		self.sprite.samus.color = {255, 255, 255, 0}
@@ -68,7 +68,7 @@ class "game" {
 		
 		--TEMP DATA, to be stored in files eventually
 		self.environment = {}
-		self.environment.friction = 750
+		self.environment.friction = 1000
 		self.environment.gravity = 600
 		self.environment.tileSize = 16
 		

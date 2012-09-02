@@ -31,11 +31,19 @@ class "sprite" {
 	end,
 	
 	update = function(self, dt, t, offsetX, offsetY)
+		--increase frame after the specified amount of time has passed
 		if t - self.time > self.currentAnimation[self.animCount][2] then
 			self.currentFrame = self.currentAnimation[self.animCount][1]
 			self.time = t
-			self.animCount = self.animCount + 1 <= # self.currentAnimation and self.animCount + 1 or 1
+			if self.currentAnimation[self.animCount][2] ~= 0 then
+				self.animCount = self.animCount + 1 <= # self.currentAnimation and self.animCount + 1 or 1
+			end
 		end
+		--check for special animation commands (such as stop or change)
+		if type(self.currentAnimation[self.animCount][2]) == "string" then
+			self:setAnim(self.currentAnimation[self.animCount][2])
+		end
+		--work out where to draw the sprite
 		local x, y, w, h = self.spriteset.sprite[self.currentFrame]:getViewport()
 		self.offsetX = offsetX or self.offsetX
 		self.offsetY = offsetY or self.offsetY
@@ -43,7 +51,7 @@ class "sprite" {
 		self.drawX = self.posX - w / 2 + self.offsetX
 		self.drawY = self.posY - h / 2 + self.offsetY - self.offsetY2
 		
-		
+		--flip left/right sprites if needed
 		if self.direction == "right" then
 			self.scaleX = 1
 			self.scaleY = 1
