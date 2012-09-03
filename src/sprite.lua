@@ -42,10 +42,10 @@ class "sprite" {
 		end
 		--increase frame after the specified amount of time has passed
 		if t - self.time > self.currentAnimation[self.animCount][2] then
-			self.currentFrame = self.currentAnimation[self.animCount][1]
 			self.time = t
 			self.animCount = self.animCount + 1 <= # self.currentAnimation and self.animCount + 1 or 1
 		end
+		self.currentFrame = self.currentAnimation[self.animCount][1]
 		--work out where to draw the sprite
 		local x, y, w, h = self.spriteset.sprite[self.currentFrame]:getViewport()
 		self.offsetX = offsetX or self.offsetX

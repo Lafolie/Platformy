@@ -109,7 +109,7 @@ class "entity" (sprite) {
 						self.jmpDisable = true
 						self.wallJump = true
 						self.wallTime = t
-						self:lock(0.1)
+						self:lock(0.05)
 						self.velX = 0
 					end
 				end
@@ -136,7 +136,7 @@ class "entity" (sprite) {
 						self.jmpDisable = true
 						self.wallJump = true
 						self.wallTime = t
-						self:lock(0.1)
+						self:lock(0.05)
 						self.velX = 0
 					end
 				end
@@ -299,10 +299,11 @@ class "entity" (sprite) {
 		if self.wallJump then
 			self:setAnim("wall")
 			self.velY = 0
-			if t - self.wallTime > 0.1 then
+			if t - self.wallTime > 0.05 then
 				self.wallJump = nil
 				self.velY = self.jmp * 0.9
-				if self.direction == "right" then self.velX = 2 * -self.accel * dt else self.velX = 2 * self.accel * dt end
+				if self.direction == "right" then self.velX = self.maxVelX else self.velX = -self.maxVelX end
+				self:lock(0.002) --lock control to prevent cancelling some x movement
 			end
 		else
 			--running
@@ -333,7 +334,6 @@ class "entity" (sprite) {
 		end
 		--draw self
 		sprite.draw(self)
-		love.graphics.print(self.animCount .. " " .. tostring(self.currentAnimation[self.animCount][2]), self.drawX, self.drawY - 17)
 	end,
 	
 	lock = function(self, time)
