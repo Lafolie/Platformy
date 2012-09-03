@@ -106,8 +106,11 @@ class "entity" (sprite) {
 					
 					--check for wall jump
 					if (self.air and not self.jmpDisable) and self.control.jumpPress and self.control.right and not self.control.left then
-						self.velY = self.jmp * 0.90
 						self.jmpDisable = true
+						self.wallJump = true
+						self.wallTime = t
+						self:lock(0.1)
+						self.velX = 0
 					end
 				end
 				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
@@ -130,8 +133,11 @@ class "entity" (sprite) {
 					
 					--check for wall jump
 					if (self.air and not self.jmpDisable) and self.control.jumpPress and self.control.left and not self.control.right then
-						self.velY = self.jmp * 0.90
 						self.jmpDisable = true
+						self.wallJump = true
+						self.wallTime = t
+						self:lock(0.1)
+						self.velX = 0
 					end
 				end
 				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
@@ -289,15 +295,25 @@ class "entity" (sprite) {
 		
 		--finish up!
 		--set animations
-		--running
-		if not self.air and (self.control.left or self.control.right) then self:setAnim("run") end
-		--standing still
-		if self.velX == 0 and not(self.air) then self:setAnim("stand") end
-		--jumping
-		if self.air and self.jmpDisable then self:setAnim("jump") end
-		--falling
-		if self.air and not(self.jmpDisable) and math.abs(self.velY) > 85  then self:setAnim("jump") end
-		
+		--special stuff for wall jumping
+		if self.wallJump then
+			self:setAnim("wall")
+			self.velY = 0
+			if t - self.wallTime > 0.1 then
+				self.wallJump = nil
+				self.velY = self.jmp * 0.9
+				if self.direction == "right" then self.velX = 2 * -self.accel * dt else self.velX = 2 * self.accel * dt end
+			end
+		else
+			--running
+			if not self.air and (self.control.left or self.control.right) then self:setAnim("run") end
+			--standing still
+			if self.velX == 0 and not(self.air) then self:setAnim("stand") end
+			--jumping
+			if self.air and self.jmpDisable then self:setAnim("jump") end
+			--falling
+			if self.air and not(self.jmpDisable) and math.abs(self.velY) > 85  then self:setAnim("jump") end
+		end
 		self.posX = self.posX + self.velX * dt
 		self.posY = self.posY + self.velY * dt
 		
@@ -317,9 +333,7 @@ class "entity" (sprite) {
 		end
 		--draw self
 		sprite.draw(self)
-		love.graphics.setPointStyle("rough")
-		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.point(self.dxdot or 0, self.posY)
+		love.graphics.print(self.animCount .. " " .. tostring(self.currentAnimation[self.animCount][2]), self.drawX, self.drawY - 17)
 	end,
 	
 	lock = function(self, time)
