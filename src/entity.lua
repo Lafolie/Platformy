@@ -149,9 +149,9 @@ class "entity" (sprite) {
 				
 				--gravitah (respect my)			
 				--sensory
-				local worldX, worldY = self:getWorld(-w * 0.25, h * 2 + 1, map.env.tileSize, map)
+				local worldX, worldY = self:getWorld(-w + 4, h * 2 + 1, map.env.tileSize, map)
 				local senA = map:pass(worldX, worldY)
-				local worldX, worldY = self:getWorld(w * 0.25, h * 2 + 1, map.env.tileSize, map)
+				local worldX, worldY = self:getWorld(w - 4, h * 2 + 1, map.env.tileSize, map)
 				local senB = map:pass(worldX, worldY)
 							
 				--actuate
@@ -177,7 +177,7 @@ class "entity" (sprite) {
 				end
 				
 				--special case for stairs
-				local stairsOffsetX = self.direction == "right" and w * 0.25 or -w * 0.25
+				local stairsOffsetX = self.direction == "right" and -w * 0.25 or w * 0.25
 				local worldX, worldY = self:getWorld(stairsOffsetX, map.env.tileSize - 1, map.env.tileSize, map)
 				if map:pass(worldX, worldY) and self.velY >= 0 then
 					--stairs
@@ -190,8 +190,8 @@ class "entity" (sprite) {
 					local hm = map:heightMap(worldX, worldY)
 					local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
 					local hmB = hm and hm[hmId] or 0
-					self.hmA = hmA == 0 and hmA
-					self.hmB = hmB == 0 and hmB
+					self.hmA = hmA
+					self.hmB = hmB
 					--prevent snapping from above
 					if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
 						self.velY = self.velY + map.env.gravity * dt
@@ -221,12 +221,12 @@ class "entity" (sprite) {
 				if self.velY < 0 then
 					local senC, senD = true, true --ground sensors
 					
-					local worldX, worldY = self:getWorld(-w / 4, -h * 2 - 1, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(-w * 0.25, -h * 2 - 1, map.env.tileSize, map)
 					if map:pass(worldX, worldY) then
 						senC = nil
 					end
 					
-					local worldX, worldY = self:getWorld(w / 4, -h * 2 - 1, map.env.tileSize, map)
+					local worldX, worldY = self:getWorld(w * 0.25, -h * 2 - 1, map.env.tileSize, map)
 					if map:pass(worldX, worldY) then
 						senD = nil
 					end
