@@ -32,8 +32,12 @@ class "entity" (sprite) {
 			self:ai()
 		end
 		
+		--badass pseudo physics (all hail Yuji Naka)
 		if dt ~= 0 then
-			--badass pseudo physics (all hail Yuji Naka)
+			--sensors
+			local jumpSensorL = self:sensor(-self.width / 4, -1, 0, -1, map)
+			local jumpSensorR = self:sensor(self.width / 4, -1, 0, -1, map)
+			
 			if not(self.controlLock) then
 				--apply voluntary movement
 				if self.control.left then
@@ -54,9 +58,7 @@ class "entity" (sprite) {
 				
 				--jumping
 				if self.control.jump and not(self.air) then
-					local worldX, worldY = self:getWorld(-self.width / 4, -1, map.env.tileSize, map)
-					local worldX2 = self:getWorld(self.width / 4, -1, map.env.tileSize, map)
-					if not map:pass(worldX, worldY - 1) and not map:pass(worldX2, worldY - 1) then
+					if not jumpSensorL and not jumpSensorR then
 						self.velY = self.jmpDisable and self.velY or self.jmp
 						self.jmpDisable = true
 					else
@@ -362,5 +364,13 @@ class "entity" (sprite) {
 		y = math.max(math.min(y, # map.layout[2]), 1)
 		x = math.max(math.min(x, # map.layout[2][y]), 1)
 		return x, y
-	end		
+	end,
+	
+	--retrieve tile data for collisions and such. off* = pixel offsets, off*2 = tile offsets
+	sensor = function(self, offX, offY, offX2, offY2, map)
+		local x, y =  math.ceil((self.posX + offX) / map.env.tileSize), math.ceil((self.posY + offY) / map.env.tileSize)
+		y = math.max(math.min(y, map.height), 1)
+		x = math.max(math.min(x, map.width), 1)
+		return map:pass(x + offX2, y + offY2)
+	end
 }			

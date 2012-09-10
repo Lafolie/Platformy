@@ -10,7 +10,7 @@ class "tileset" {
 		local height = self.img:getHeight()
 		self.tile = {}
 		self.tileSize = tileSize
-		local tileGrid = tileSize + 1
+		local tileGrid = tileSize + 2
 		
 		for y = 0, (height / tileGrid) - 1 do
 			for x = 0, (width / tileGrid) - 1 do

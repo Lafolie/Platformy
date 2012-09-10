@@ -12,6 +12,7 @@
 --[[
 	GAME CLASS
 ]]
+local state = {} --pairs of gamestates
 
 class "game" {
 	__init__ = function(self)
@@ -159,7 +160,25 @@ class "game" {
 							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 							}
-		self.tmap = map({tempunderlay, tempmap, {}}, tileset("spr/zeroTiles.png", properties, self.environment.tileSize), self.environment, "Brinstar")
+		local tempWH = {
+						{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15, 15,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
+						{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15}
+		}
+		
+		self.tmap = map({{}, tempWH, {}}, nil, tileset("spr/zeroTiles2.png", properties, self.environment.tileSize), self.environment, "Brinstar")
 		
 		--Game content
 		self.overworld = {}
@@ -209,7 +228,8 @@ class "game" {
 					newDirection = "left"
 				end
 				self.entity[# self.entity].control[newDirection] = true
-				self.entity[# self.entity].color = {255, 100, 255, 255}
+				--self.entity[# self.entity].color = {255, 100, 255, 255}
+				self.entity[# self.entity].maxVelX = 75
 				self.entity[# self.entity].weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1)
 				self.entity[# self.entity].control.fire = true
 				self.entity[# self.entity].ai = function(self)
@@ -299,5 +319,14 @@ class "game" {
 	
 	spawnSAX = function(self)
 		table.insert(self.entity, sprite("spr/samus.png"), 25, 32)
+	end
+}
+
+class "gamestate" {
+	__init__ = function(self, name)
+		assert(name, "State declared without a name.")
+		state[name] = self
+		
+		self.load = function() end
 	end
 }

@@ -4,21 +4,22 @@
 ]]
 
 class "map" {
-	__init__ = function(self, layout, tileset, environment, name)
+	__init__ = function(self, layout, dynamic, tileset, environment, name)
 		self.layout = layout
+		self.dynamic = dynamic or {} --holds dynamic tiles
 		self.tileset = tileset
 		self.name = name or "Untitled Area"
 		self.posX = 0
 		self.posY = 0
 		self.env = environment or {["friction"] = 1000, ["gravity"] = 600, ["tileSize"] = 16}
-		
+		self.width = # layout[2][1]
+		self.height = # layout[2]
 		self.batch = {}
 		for x = 1, # layout do
 			self.batch[x] = love.graphics.newSpriteBatch(tileset.img, 9000)
 		end
 		
 		self.animatedTiles = {}
-		
 		--Draw the map
 		print("Raw data for " .. self.name)
 		local renderTime = love.timer.getMicroTime()
@@ -35,11 +36,14 @@ class "map" {
 			end
 			self.batch[z]:unbind()
 		end
+		--initialise dynamic tiles
+		for k, dyn in ipairs(self.dynamic) do
+			if dyn.load then dyn:load() end
+		end 
 		
 		local renderTime = love.timer.getMicroTime() - renderTime
 		print("\tCompile time: " .. renderTime .. "s")
 		print("\tAnimated tiles: " .. # self.animatedTiles)
-		print("\tWidth: " .. # layout[2][1] .. " ~ Height: " .. # layout[2])
 		
 	end,
 	
@@ -47,11 +51,20 @@ class "map" {
 		for k, id in ipairs(self.animatedTiles) do
 			--animation function
 		end
-
+		
+		for k, dyn in ipairs(self.dynamic) do
+			dyn:update(dt, t, offsetX, offsetY)
+		end
+		
 	end,
 	
 	draw = function(self, layer)
 		local layer = layer or 2
+		if layer == 2 then
+			for k, dyn in ipairs(self.dynamic) do
+				dyn:draw()
+			end
+		end
 		love.graphics.setColor(255, 255, 255, 255)
 		love.graphics.draw(self.batch[layer], self.posX + self.offsetX, self.posY + self.offsetY)
 	end,
@@ -66,4 +79,8 @@ class "map" {
 		return self.tileset.tile[self.layout[2][y][x]].property.heightMap --return heightMap property of xy
 	end
 }
-		
+
+--dynamic tiles
+class "dynTile" {
+}
+	
