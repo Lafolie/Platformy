@@ -39,7 +39,7 @@ class "map" {
 		--initialise dynamic tiles
 		for k, dyn in ipairs(self.dynamic) do
 			if dyn.load then dyn:load() end
-		end 
+		end
 		
 		local renderTime = love.timer.getMicroTime() - renderTime
 		print("\tCompile time: " .. renderTime .. "s")
@@ -75,8 +75,10 @@ class "map" {
 		return self.tileset.tile[self.layout[2][y][x]].property.pass--return passability property of xy
 	end,
 	
-	heightMap = function(self, x, y)
-		return self.tileset.tile[self.layout[2][y][x]].property.heightMap --return heightMap property of xy
+	properties = function(self, x, y)
+		if y <= 0 or y > # self.layout[2] then return nil end
+		if x <= 0 or x > # self.layout[2][y] then return nil end
+		return self.tileset.tile[self.layout[2][y][x]].property --return tile properties
 	end
 }
 

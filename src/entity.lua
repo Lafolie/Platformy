@@ -1,6 +1,8 @@
 --[[
 	ENTITY
-	NPCs, items and anything else that exists in but isn't a part of a map.
+	Characters, items and anything else that exists in but isn't a part of a map.
+	Handles movement, collision, AI and other actions.
+	Collision is based on sizes that should correspond to the sprite and tile grid size.
 ]]
 
 class "entity" (sprite) {
@@ -24,7 +26,32 @@ class "entity" (sprite) {
 		
 		self.width = width or 16
 		self.height = height or self.width --these are used for collisions
+		
+		--setup sensors
+		local w = self.width / 2
+		local h = self.height / 2
+		
+		self.jumpSensorL = {-w / 2, -1, 0, -1}
+		self.jumpSensorR = {w / 2, -1, 0, -1}
+		
+		self.lowerSensorL = {-w - 1, h / 2, 0, 0}
+		self.upperSensorL = {-w - 1, h / 2, 0, -1}
+		self.lowerSensorR = {w + 1, h / 2, 0, 0}
+		self.upperSensorR = {w + 1, h / 2, 0, -1}
+		
+		self.floorSensorL = {-w + 4, h * 2 + 1, 0, 0}
+		self.floorSensorR = {w - 4, h * 2 + 1, 0, 0}
+		
+		self.rampSensor = {0, 15, 0, 0}
+		self.rampSensorL = {-w / 4, h + 1, 0, 0}
+		self.rampSensorR = {w / 4, h + 1, 0, 0}
+		
+		self.ceilSensorL = {-w / 4, -h * 2 - 1, 0, 0}
+		self.ceilSensorR = {w / 4, -h * 2 - 1, 0, 0}
 	end,
+	
+	
+	
 	
 	update = function(self, dt, t, map, offsetX, offsetY, check)
 		--execute ai scripts
@@ -34,10 +61,27 @@ class "entity" (sprite) {
 		
 		--badass pseudo physics (all hail Yuji Naka)
 		if dt ~= 0 then
-			--sensors
-			local jumpSensorL = self:sensor(-self.width / 4, -1, 0, -1, map)
-			local jumpSensorR = self:sensor(self.width / 4, -1, 0, -1, map)
 			
+			--width and height aliases (halved since sprites are centered)
+			local w = self.width / 2
+			local h = self.height / 2
+			
+			--update sensors
+			local jumpSensorL = self:sensor(self.jumpSensorL, map)
+			local jumpSensorR = self:sensor(self.jumpSensorR, map)
+			
+			local lowerSensorL = self:sensor(self.lowerSensorL, map)
+			local upperSensorL = self:sensor(self.upperSensorL, map)
+			local lowerSensorR = self:sensor(self.lowerSensorR, map)
+			local upperSensorR = self:sensor(self.upperSensorR, map)
+			
+			local floorSensorL = self:sensor(self.floorSensorL, map)
+			local floorSensorR = self:sensor(self.floorSensorR, map)
+			
+			local ceilSensorL = self:sensor(self.ceilSensorL, map)
+			local ceilSensorR = self:sensor(self.ceilSensorR, map)
+			
+			--only move if control is enabled
 			if not(self.controlLock) then
 				--apply voluntary movement
 				if self.control.left then
@@ -58,23 +102,23 @@ class "entity" (sprite) {
 				
 				--jumping
 				if self.control.jump and not(self.air) then
-					if not jumpSensorL and not jumpSensorR then
+					--check for immediate ceiling
+					if not jumpSensorL.pass and not jumpSensorR.pass then
 						self.velY = self.jmpDisable and self.velY or self.jmp
 						self.jmpDisable = true
 					else
-						--self.control.jump = nil
+						self.control.jump = nil --prevents jump key being held down to jump when possible
 					end
 				end
 				
+				--stop jumping
 				if self.control.jumpRelease then
 					self.velY = math.max(-100, self.velY)
 					self.jmpDisable = nil
-				end
-				
-				if self.control.jumpRelease then
 					self.control.jump = nil
 					self.control.jumpRelease = nil
 				end
+				
 			else
 				self.control = {} --unable to move oneself, so remove voluntary responses
 				if t - self.lockTime >= self.lockFree then
@@ -95,16 +139,13 @@ class "entity" (sprite) {
 			
 			--do the collision ting
 			if not(self.noclip) then
-				local w = math.floor(self.width / 2)
-				local h = math.floor(self.height / 2) --halved since the sprite is centred
 							
 				--LEFT SENSOR
-				local worldX, worldY = self:getWorld(-w - 1, h / 2, map.env.tileSize, map)
-				if (map:pass(worldX, worldY) or 0) >= 2 then --and not(self.ramp) then
+				if (lowerSensorL.pass or 0) >= 2 then
 					if self.velX < 0 then
 						self.velX = 0
 					end
-					self.posX = (worldX * map.env.tileSize) + w
+					self.posX = lowerSensorL.posX + w
 					
 					--check for wall jump
 					if (self.air and not self.jmpDisable) and self.control.jumpPress and self.control.right and not self.control.left then
@@ -115,23 +156,19 @@ class "entity" (sprite) {
 						self.velX = 0
 					end
 				end
-				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
+				if upperSensorL.pass and (self.air or math.abs(self.velY) < 75) then
 					if self.velX < 0 then
 						self.velX = 0
 					end
-					self.posX = (worldX * map.env.tileSize) + w
+					self.posX = lowerSensorL.posX + w
 				end
 				
 				--RIGHT SENSOR
-				local worldX, worldY = self:getWorld(w + 1, h / 2, map.env.tileSize, map)
-				if debugMode then
-					self.dxdot = (worldX * map.env.tileSize)
-				end
-				if (map:pass(worldX, worldY) or 10) <= 2 then --and not(self.ramp) then --only collide if it's a true solid tile
+				if (lowerSensorR.pass or 10) <= 2 then
 					if self.velX > 0 then
 						self.velX = 0
 					end
-					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
+					self.posX = lowerSensorR.posX - (map.env.tileSize + w)
 					
 					--check for wall jump
 					if (self.air and not self.jmpDisable) and self.control.jumpPress and self.control.left and not self.control.right then
@@ -142,74 +179,63 @@ class "entity" (sprite) {
 						self.velX = 0
 					end
 				end
-				if map:pass(worldX, worldY - 1) and (self.air or math.abs(self.velY) < 75) then
+				if upperSensorR.pass and (self.air or math.abs(self.velY) < 75) then
 					if self.velX > 0 then
 						self.velX = 0
 					end
-					self.posX = (worldX * map.env.tileSize) - (map.env.tileSize + w)
+					self.posX = upperSensorR.posX - (map.env.tileSize + w)
 				end
 				
 				--gravitah (respect my)			
-				--sensory
-				local worldX, worldY = self:getWorld(-w + 4, h * 2 + 1, map.env.tileSize, map)
-				local senA = map:pass(worldX, worldY)
-				local worldX, worldY = self:getWorld(w - 4, h * 2 + 1, map.env.tileSize, map)
-				local senB = map:pass(worldX, worldY)
-							
-				--actuate
-				--local hmOffSet = map.env.tileSize + math.abs(hmB - hmA)
-				
-				if (not senA and not senB) or self.velY < 0 then
+				if (not floorSensorL.pass and not floorSensorR.pass) or self.velY < 0 then
 					--nothing
 					self.velY = self.velY + map.env.gravity * dt
 					self.air = true
-				elseif (senA and senA == 2) or (senB and senB == 2) then
+				elseif (floorSensorL.pass and floorSensorL.pass == 2) or (floorSensorR.pass and floorSensorR.pass == 2) then
 					--floor
-					if self.velY >= 0 and self.posY + self.velY * dt >= worldY * map.env.tileSize then
+					if self.velY >= 0 and self.posY + self.velY * dt >= floorSensorL.posY then
 						self.velY = 0
-						self.posY = (worldY -2) * map.env.tileSize
+						self.posY = floorSensorL.posY - map.env.tileSize * 2
 						self.air = nil
 					else
 						self.velY = 0
-						self.posY = (worldY - 2) * map.env.tileSize
+						self.posY = floorSensorL.posY - map.env.tileSize * 2
 						self.air = nil
 					end
-				elseif (senA and senA ~= 2) and (senB and senB ~= 2) then
-					self.posY = (worldY - 1) * map.env.tileSize + 1
+				elseif (floorSensorL.pass and floorSensorL.pass ~= 2) and (floorSensorR.pass and floorSensorR.pass ~= 2) then
+					self.posY = floorSensorL.posY - map.env.tileSize + 1
 				end
 				
-				--special case for stairs
+				--special case for stairs (do the sensor stuff here to prevent glitches)
 				local stairsOffsetX = self.direction == "right" and -w * 0.25 or w * 0.25
-				local worldX, worldY = self:getWorld(stairsOffsetX, map.env.tileSize - 1, map.env.tileSize, map)
-				if map:pass(worldX, worldY) and self.velY >= 0 then
+				self.rampSensor[1] = stairsOffsetX
+				local rampSensor = self:sensor(self.rampSensor, map)
+				
+				if rampSensor.pass and self.velY >= 0 then
 					--stairs
-					local worldX, worldY = self:getWorld(-w * 0.25, 10, map.env.tileSize, map)
-					local hm = map:heightMap(worldX, worldY)
-					local hmId = hm and math.floor((self.posX - w * 0.25) - (worldX - 1) * map.env.tileSize)
-					local hmA = hm and hm[hmId] or 0
-	
-					local worldX, worldY = self:getWorld(w * 0.25, 10, map.env.tileSize, map)
-					local hm = map:heightMap(worldX, worldY)
-					local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
-					local hmB = hm and hm[hmId] or 0
-					self.hmA = hmA
-					self.hmB = hmB
+					local rampSensorL = self:sensor(self.rampSensorL, map)
+					local hmId = math.floor((self.posX - w / 4) - rampSensorL.posX + map.env.tileSize)
+					local hmA = rampSensorL.prop.heightMap and rampSensorL.prop.heightMap[hmId] or 0
+					
+					local rampSensorR = self:sensor(self.rampSensorR, map)
+					local hmId = math.floor((self.posX + w / 4) - rampSensorR.posX + map.env.tileSize)
+					local hmB = rampSensorR.prop.heightMap and rampSensorR.prop.heightMap[hmId] or 0
+					
+					self.hmA = hmA --debug
+					self.hmB = hmB --debug
 					--prevent snapping from above
-					if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
+					if self.air and self.posY < rampSensorR.posY - map.env.tileSize - math.max(hmA, hmB) then
 						self.velY = self.velY + map.env.gravity * dt
 						self.air = true
---					elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then
+--					elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then --can't remember what this line is for
 --						self.posX = (worldX - 1) * map.env.tileSize - w
 					else
 						--set to height of ramp/stair
 						if (hmA == 0 and hmB == 0) and self.velY > 0 then 
-							--the magick fix
 							--prevents the bug whereby the entity gets stuck on the corner of the block
 							self.velY = self.velY + (2 * map.env.gravity) * dt
---						elseif (hmA == 0 and hmB == 1) or (hmA == 1 and hmB == 0) then
---							self.posY = self.posY + 1
 						else
-							self.posY = (worldY - 1) * map.env.tileSize - (hmA + hmB) / 2 --math.max(hmA, hmB)
+							self.posY = rampSensorR.posY - map.env.tileSize - (hmA + hmB) / 2 --math.max(hmA, hmB)
 							self.velY = 0 
 							self.air = nil
 							self.ramp = true
@@ -221,61 +247,13 @@ class "entity" (sprite) {
 	
 				--celings
 				if self.velY < 0 then
-					local senC, senD = true, true --ground sensors
-					
-					local worldX, worldY = self:getWorld(-w * 0.25, -h * 2 - 1, map.env.tileSize, map)
-					if map:pass(worldX, worldY) then
-						senC = nil
+					if ceilSensorL.pass and ceilSensorR.pass then
+						if self.posY + self.velY < ceilSensorL.posY then
+							self.velY = 0
+							self.posY = ceilSensorL.posY + map.env.tileSize + self.offsetY2
+						end
 					end
-					
-					local worldX, worldY = self:getWorld(w * 0.25, -h * 2 - 1, map.env.tileSize, map)
-					if map:pass(worldX, worldY) then
-						senD = nil
-					end
-					
-					if senC and senD then
-						--somecode
-					elseif self.posY + self.velY < worldY * map.env.tileSize then
-						self.velY = 0
-						self.posY = (worldY	* map.env.tileSize) + map.env.tileSize + self.offsetY2
-					end
-					
-					--special case for stairs ON THE CEILING (EXPERIMENTAL, DISABLED FOR NOW)
-		--			local stairsOffsetX = self.direction == "right" and -w * 0.25 or w * 0.25
-		--			local worldX, worldY = self:getWorld(stairsOffsetX, -map.env.tileSize + 1, map.env.tileSize, map)
-		--			print("WX-" .. worldX)
-		--			if (map:pass(worldX, worldY - 1) and self.velY <= 0) then
-		--				--stairs
-		--				local worldX, worldY = self:getWorld(-w * 0.25, -10, map.env.tileSize, map)
-		--				local hm = map:heightMap(worldX, worldY)
-		--				local hmId = hm and math.floor((self.posX - w * 0.25) - (worldX - 1) * map.env.tileSize)
-		--				local hmA = hm and hm[hmId] or 0
-		--
-		--				local worldX, worldY = self:getWorld(w * 0.25, -10, map.env.tileSize, map)
-		--				local hm = map:heightMap(worldX, worldY)
-		--				local hmId = hm and math.floor((self.posX + w * 0.25) - (worldX - 1) * map.env.tileSize)
-		--				local hmB = hm and hm[hmId] or 0
-		--				<remove>
-		--				prevent snapping from above
-		--				if self.air and self.posY < (worldY - 1) * map.env.tileSize - math.max(hmA, hmB) then
-		--					self.velY = self.velY + map.env.gravity * dt
-		--					self.air = true
-		--				elseif self.velY < 0 and self.posY - h * 2 > (worldY) * map.env.tileSize - math.min(hmA, hmB) then
-		--					self.posX = (worldX - 1) * map.env.tileSize - w
-		--					
-		--				else
-		--				</remove>
-							--set to height of ramp/stair
-		--					self.posY = (worldY - 1) * map.env.tileSize - math.max(hmA, hmB)
-		--					self.velY = 0 
-		--					print(math.max(hmA, hmB) .. " A-" .. hmA .. " B-" .. hmB .. " posY-" .. self.posY .. " wy" .. worldY)
-		--					--self.air = nil
-		--					--self.ramp = true
-		--				--end
-		--			else
-		--				--self.ramp = nil
-		--			end
-	
+					--place ramp ceiling code here
 				end
 			end
 			
@@ -359,18 +337,12 @@ class "entity" (sprite) {
 		return math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2) 
 	end,
 	
-	getWorld = function(self, offX, offY, tileSize, map)
-		local x, y =  math.ceil((self.posX + offX) / tileSize), math.ceil((self.posY + offY) / tileSize)
-		y = math.max(math.min(y, # map.layout[2]), 1)
-		x = math.max(math.min(x, # map.layout[2][y]), 1)
-		return x, y
-	end,
-	
 	--retrieve tile data for collisions and such. off* = pixel offsets, off*2 = tile offsets
-	sensor = function(self, offX, offY, offX2, offY2, map)
-		local x, y =  math.ceil((self.posX + offX) / map.env.tileSize), math.ceil((self.posY + offY) / map.env.tileSize)
+	sensor = function(self, sensorMap, map)
+		local offX, offY, offX2, offY2 = unpack(sensorMap) --get the sensor mappings
+		local x, y =  math.ceil((self.posX + offX) / map.env.tileSize), math.ceil((self.posY + offY) / map.env.tileSize) --convert to 'world' coords
 		y = math.max(math.min(y, map.height), 1)
 		x = math.max(math.min(x, map.width), 1)
-		return map:pass(x + offX2, y + offY2)
+		return {posX = x * map.env.tileSize, posY = y * map.env.tileSize, pass = map:pass(x + offX2, y + offY2), prop = map:properties(x + offX2, y + offY2)}
 	end
 }			
