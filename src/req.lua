@@ -1,6 +1,5 @@
 require("lib.slither")
-require("gameNew")
---require("class.game")
+require("class.game")
 require("class.tileset")
 require("class.map")
 require("class.spriteset")
