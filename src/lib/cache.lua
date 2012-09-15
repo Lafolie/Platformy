@@ -20,7 +20,7 @@ cache = setmetatable(cache, {
 })
 
 --cache the files
-local loadItem = function(type, name)
+loadItem = function(type, name)
 	--generate a unique identifier
 	local uid = ("%s:%s"):format(type, name)
 	
@@ -64,6 +64,10 @@ cache._load = {
 		else
 			return love.graphics.newFont(name, tonumber(size)), true
 		end
+	end,
+	
+	tileset = function(name)
+		return tileset(love.filesystem.load(name)())
 	end
 }
 

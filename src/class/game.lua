@@ -137,7 +137,5 @@ class "gamestate" {
 		for k, call in ipairs(callbacks) do
 			self[call] = self[call] or function() end
 		end	
-		
-		self:reset()
 	end
 }

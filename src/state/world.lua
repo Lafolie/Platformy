@@ -8,6 +8,7 @@ return {
 		self.map = {}
 		self.player = {}
 		self.entity = {}
+		self.tileset = cache.tileset("tileset/test.lua")
 	end,
 	
 	update = function(self, dt, t)

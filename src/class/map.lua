@@ -4,10 +4,10 @@
 ]]
 
 class "map" {
-	__init__ = function(self, layout, dynamic, tileset, environment, name)
+	__init__ = function(self, layout, tileset, dynamic, environment, name)
 		self.layout = layout
 		self.dynamic = dynamic or {} --holds dynamic tiles
-		self.tileset = tileset
+		self.tileset = cache.tileset(tileset)
 		self.name = name or "Untitled Area"
 		self.posX = 0
 		self.posY = 0
@@ -16,7 +16,7 @@ class "map" {
 		self.height = # layout[2]
 		self.batch = {}
 		for x = 1, # layout do
-			self.batch[x] = love.graphics.newSpriteBatch(tileset.img, 9000)
+			self.batch[x] = love.graphics.newSpriteBatch(tileset.img, self.width * self.height)
 		end
 		
 		self.animatedTiles = {}
