@@ -1,332 +1,143 @@
 --[[
-	PLATFORMY
-	Copyright (c) 2012 Dale James
-	
-	Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-		
-		The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-	
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+	GAME
+	Game class. Handles states, manages assets such as sounds and images and is the entry point for content.
 ]]
-
---[[
-	GAME CLASS
-]]
-local state = {} --pairs of gamestates
+local state = {}
 
 class "game" {
 	__init__ = function(self)
-		--Core stuff
-		self.scale = 2
-		love.graphics.setDefaultImageFilter("nearest", "nearest")
-		self.saveGame = {progress = {}, items = {}, energy = 99, missile = 0, location = {0, 0}}
-		self.mode = "map"
-		self.key = {up = "w", down = "s", left = "a", right = "d", jump = "/", fire = "."}
-		self.offsetX = (love.graphics.getWidth() / 2) / 2
-		self.offsetY = (love.graphics.getHeight() / 2) / 2
-		love.graphics.setIcon(love.graphics.newImage("spr/bleep.png"))
-
-		--Graphic content
-		self.entity = {}
-		self.library = {}
-		self.sprite = {}
-		self.smoothIndex = 1
-		self.smoothFactor = 4
-		self.smooth = {}
-		--local layout = {{6, 0, 18, 32}, {29, 1, 20, 31}, {52, 1, 22, 31}, {75, 1, 24, 31}}
-		--TEMPORARY SAMUS
-		self.saxAnim = {stand = {{1, 0}}, run = {{3, 0.075}, {4, 0.075}, {5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}}, jump = {{13, 0}}}
-		local newAnim = {stand = {{1, 0.15}, {2, 0.15}, {3, 0.15}, {4, 0.15}}, run = {{5, 0.075}, {6, 0.075}, {7, 0.075}, {8, 0.075}, {9, 0.075}, {10, 0.075}, {11, 0.075}, {12, 0.075}, {13, 0.075}, {14, 0.075}}, jump = {{16, 0.15}, {17, 0.15}, {18, 0.15}, {19, 0.15}, {15, 0.15}, {1, "stop"}}, fall = {{19, 0.15}, {15, 0}}, wall = {{20, 0.25}, {21, 0.25}}}
-		self.sprite.samus = entity("Samus", spriteset("spr/fullsuit.png", 36, 40), newAnim, 16, 16, 112, 64)
-		self.sprite.samus.weapon = weapon(spriteset("spr/power.png", 4, 5), 18, -9, 33, 0.1, "semi")
---		self.sprite.samus.color = {255, 255, 255, 0}
-		
-		--TEMPORARY SAX
-		self.spawnTime = love.timer.getTime()
-		table.insert(self.entity, entity("SA-X", spriteset("spr/saxSamus.png", 31, 37), self.saxAnim, 16, 16, 96, 64))
-		self.entity[1].color = {255, 100, 255, 255}
-		self.entity[1].control.right = true
-		self.entity[1].ai = function(self)
-			if self.velX == 0 then
-				self.control.jump = true
-				if self.velY > 90 then self.control.jumpRelease = true end
-				if self.velY > 0 and self.control.jumpRelease then
-					if self.control.left then 
-						self.control.left = nil
-						self.control.right = true
-					else
-						self.control.left = true
-						self.control.right = nil
-					end
-				end
-			else
---				self.control.jumpRelease = nil
-			end
---			if (self.control[direction] == true and self.velY > 0 then
-				
+		--load save
+		self.save = self:loadGame()
+		--create gamestates
+		assert(love.filesystem.isDirectory("state"), "No states could be found!")
+		local stateFiles = love.filesystem.enumerate("state")
+		for k, file in ipairs(stateFiles) do
+			local name = file:match("^(.+)%.lua$")
+			state[name] = gamestate(name, file)
 		end
-			 
 		
-		--TEMP DATA, to be stored in files eventually
-		self.environment = {}
-		self.environment.friction = 1000
-		self.environment.gravity = 800
-		self.environment.tileSize = 16
+		self.save.fileName = "export"
+		self:saveGame(self.save)
 		
-		local clip = tileProperties(2)
-		local noclip = tileProperties()
-		local basicRamp = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
-		local basicRamp2 = {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1}
-		local ramp = tileProperties(3, basicRamp)
-		local ramp2 = tileProperties(1, basicRamp2)
-		local properties = {
-							noclip, noclip, noclip, noclip, clip, clip,
-							noclip, clip, clip, clip, noclip, noclip,
-							clip, clip, clip, clip, noclip, clip,
-							clip, clip, clip, clip, noclip, noclip,
-							clip, noclip, ramp, ramp2, clip, clip,
-							clip, clip, clip, clip, clip, clip
-							} --load tileset passabilty data
-		local tempunderlay = {
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 23, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-		}
-		
-		
-		local tempmap = {
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15},
-							{15, 6, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 5, 15},
-							{15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15},
-							{15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 15},
-							{15, 16, 17, 1, 1, 1, 1, 1, 24, 23, 1, 12, 1, 1, 1, 1, 1, 1, 20, 21, 21, 21, 21, 21, 6, 15, 15},
-							{15, 16, 17, 1, 35, 1, 35, 1, 30, 36, 36, 18, 1, 1, 1, 1, 1, 1, 26, 1, 1, 1, 1, 1, 14, 15, 15},
-							{15, 16, 17, 1, 35, 1, 35, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 15},
-							{15, 16, 17, 1, 35, 1, 35, 1, 1, 1, 1, 1, 1, 1, 24, 1, 1, 1, 3, 3, 3, 1, 1, 1, 14, 15, 15},
-							{15, 16, 17, 1, 30, 36, 18, 1, 1, 1, 1, 1, 1, 1, 30, 36, 36, 36, 9, 9, 9, 28, 1, 1, 20, 21, 5},
-							{15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 21, 18, 1, 1, 26, 1, 14},
-							{15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 16, 17, 1, 1, 1, 1, 1, 14},
-							{15, 16, 17, 1, 1, 1, 1, 1, 1, 27, 10, 11, 1, 1, 1, 1, 1, 1, 14, 16, 17, 1, 1, 24, 1, 1, 14},
-							{15, 5, 28, 3, 3, 3, 3, 3, 27, 33, 16, 28, 3, 3, 3, 3, 1, 27, 6, 16, 17, 1, 1, 30, 36, 36, 5},
-							{15, 15, 34, 9, 9, 9, 9, 9, 33, 6, 15, 34, 9, 9, 9, 10, 11, 33, 15, 16, 17, 1, 1, 1, 1, 1, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 21, 22, 1, 14, 15, 16, 17, 1, 1, 1, 1, 1, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 14, 15, 6, 18, 24, 12, 1, 1, 1, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 14, 15, 16, 17, 30, 18, 1, 1, 1, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 14, 15, 16, 17, 1, 1, 1, 1, 1, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 6, 22, 1, 1, 1, 20, 21, 22, 1, 1, 1, 24, 1, 12, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 26, 1, 1, 1, 1, 1, 30, 36, 18, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 14},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 5},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 16, 17, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 5, 21, 21, 21, 21, 21, 21, 21, 21, 22, 1, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 16, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 15, 15},
-							{15, 15, 15, 5, 28, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 14, 15, 15},
-							{15, 15, 15, 6, 34, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 15, 15, 15}
-						}
-		local tempoverlay = {
-								{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 1, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 24, 1, 23, 12, 1, 1, 1, 1, 1, 1, 20, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, },
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 24, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 1},
-							{1, 1, 17, 1, 1, 1, 1, 1, 1, 27, 10, 1, 1, 1, 1, 1, 1, 1, 14, 1},
-							{1, 1, 28, 3, 3, 3, 3, 3, 27, 1, 1, 28, 3, 3, 3, 3, 3, 27, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-							{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-							}
-		local tempWH = {
-						{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15, 15,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15,  1,  1,  1,  1,  1, 15, 28,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
-						{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15}
-		}
-		
-		self.tmap = map({{}, tempWH, {}}, nil, tileset("spr/zeroTiles2.png", properties, self.environment.tileSize), self.environment, "Brinstar")
-		
-		--Game content
-		self.overworld = {}
-		self.tempbackground = love.graphics.newImage("spr/bgtemp.png")
-		
+		assert(state.init, "Could not find mandatory file \"state/init.state\"!")
+		self:changeState("init")
 	end,
 	
 	update = function(self, dt)
-		--Core variables and surch
+		--core thingies
 		local t = love.timer.getTime()
 		
-		--temporary state replacement
-		if self.mode == "map" then
-			--Temp stuff
-			if love.keyboard.isDown(self.key.left) then self.sprite.samus.control.left = true else self.sprite.samus.control.left = nil end
-			if love.keyboard.isDown(self.key.right) then self.sprite.samus.control.right = true else self.sprite.samus.control.right = nil end
-			if love.keyboard.isDown(self.key.jump) then self.sprite.samus.control.jumpPress = true else self.sprite.samus.control.jumpPress = nil end
-			--player2test
-			self.tmap:update(dt, t)
-			--update player
-			for k, sprite in pairs(self.sprite) do
-				sprite:update(dt, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY, self.entity)
-			end
-			--smoothing factor. Used to smooth out the scrolling effect
-			self.smooth[self.smoothIndex] = {}
-			self.smooth[self.smoothIndex].x = -self.sprite.samus.posX
-			self.smooth[self.smoothIndex].y = -self.sprite.samus.posY
-			
-			local smoothOffset = {x = 0, y = 0}
-			for k, pos in ipairs(self.smooth) do
-				smoothOffset.x = smoothOffset.x + pos.x
-				smoothOffset.y = smoothOffset.y + pos.y
-			end
-			
-			smoothOffset.x = (smoothOffset.x / # self.smooth)
-			smoothOffset.y = (smoothOffset.y / # self.smooth)
-			
-			self.smoothIndex = self.smoothIndex + 1 <= self.smoothFactor and self.smoothIndex + 1 or 1
---			smoothOffset.x = 0
---			smoothOffset.y = 0
-			--spawn stuff
-			if # self.entity < 1 and t - self.spawnTime > 2.5 then
-				self.spawnTime = t
-				table.insert(self.entity, entity("SA-X", spriteset("spr/saxSamus.png", 31, 37), self.saxAnim, 16, 16, 102, 64))
-				local newDirection = "right"
-				if # self.entity % 2 == 0 then
-					newDirection = "left"
-				end
-				self.entity[# self.entity].control[newDirection] = true
-				--self.entity[# self.entity].color = {255, 100, 255, 255}
-				self.entity[# self.entity].maxVelX = 75
-				self.entity[# self.entity].weapon = weapon(spriteset("spr/power.png", 4, 5), 8, -6, 33, 0.1)
-				self.entity[# self.entity].control.fire = true
-				self.entity[# self.entity].ai = function(self)
-					local toggleDirection = function()
-						if self.control.left then 
-							self.control.left = nil
-							self.control.right = true
-						else
-							self.control.left = true
-							self.control.right = nil
-						end
-					end
-					if self.velX == 0 then
-						self.control.jump = true
-						if self.velY > 75 then self.control.jumpRelease = true end
-						if (self.velX == 0 and self.control.jumpRelease) then
-							toggleDirection()
-						elseif not self.air then
-							--toggleDirection()
-						end
-					end
-					if self.velY == 0 and self.velX == 0 then
-						--toggleDirection()
-					end
-				end
-			end
-
-			--update player BARTBES HACK
-			for k, sprite in pairs(self.sprite) do
-				sprite:update(0, t, self.tmap, -self.sprite.samus.posX + self.offsetX, -self.sprite.samus.posY + self.offsetY, self.entity)
-			end
-			--update entities
-			for k = #self.entity, 1, -1 do
-				local entity = self.entity[k]
-				entity:update(dt, t, self.tmap, smoothOffset.x + self.offsetX, smoothOffset.y + self.offsetY, self.entity)
-				if entity.kill then 
-					table.remove(self.entity, k) 
-				end
-			end
-			
-			--update the drawing position of the map
-			self.tmap.offsetX = smoothOffset.x + self.offsetX
-			self.tmap.offsetY = smoothOffset.y + self.offsetY
-		end
+		--update current state
+		self.state:update(dt, t)
 	end,
 	
 	draw = function(self)
-		love.graphics.push()
-		love.graphics.scale(self.scale)
-		love.graphics.draw(self.tempbackground, 0, 0)
-		self.tmap:draw(1)
-		for k, sprite in pairs(self.sprite) do
-			sprite:draw()
---			love.graphics.line(0, self.sprite.samus.drawY - 1, 320, self.sprite.samus.drawY - 1)
-			--love.graphics.print(sprite.hp, 1, 1)
-		end
-		for k, entity in ipairs(self.entity) do
-			--love.graphics.print(entity.velX, entity.drawX, entity.drawY - 15)
-			entity:draw()
-		end
-		self.tmap:draw(2)
-		self.tmap:draw(3)
-		love.graphics.pop()
-		
-		if self.sprite.samus.hitID then
-			love.graphics.print(self.sprite.samus.hitID, 290, 230)
-		end
-		
-		if debugMode then
-			love.graphics.setColor(0, 0, 0, 255)
-			love.graphics.print("X-"..self.sprite.samus.drawX.." Y-"..self.sprite.samus.drawY, 215, 2)
-			love.graphics.print(love.timer.getFPS() .. "fps at " .. self.tmap.name, 2, 2)
-			love.graphics.setColor(255, 255, 255, 255)
-			love.graphics.print("X-"..self.sprite.samus.drawX.." Y-"..self.sprite.samus.drawY, 215, 1)
-			love.graphics.print(love.timer.getFPS() .. "fps at " .. self.tmap.name, 1, 1)
-			if self.sprite.samus.air then
-				love.graphics.print("AIR", 150, 1)
-				
-			end
-			if self.sprite.samus.jumpStop then love.graphics.print("STOP", 175, 1) end
-			local x, y = self.sprite.samus:getWorld(1, 15, self.tmap.env.tileSize, self.tmap)
-			love.graphics.print(x .. " " .. y, 175, 1)
-			love.graphics.print("X-" .. self.sprite.samus.posX .. " Y-" .. self.sprite.samus.posY, 1, 17)
-			love.graphics.print("hmA-" .. tostring(self.sprite.samus.hmA) .. " hmB-" .. tostring(self.sprite.samus.hmB), 215, 17)
-		end	
+		self.state:draw()
 	end,
 	
-	spawnSAX = function(self)
-		table.insert(self.entity, sprite("spr/samus.png"), 25, 32)
+	focus = function(self, f)
+		self.state:focus(f)
+	end,
+	
+	quit = function(self)
+		self.state:quit()
+	end,
+	
+	keypressed = function(self, key, unicode)
+		self.state:keypressed(key, unicode)
+	end,
+	
+	keyreleased = function(self, key)
+		self.state:keyreleased(key)
+	end,
+	
+	joystickpressed = function(self, joystick, button)
+		self.state:joystickpressed(joystick, button)
+	end,
+	
+	joystickreleased = function(self, joystick, button)
+		self.state:joystickreleased(joystick, button)
+	end,
+	
+	mousepressed = function(self, x, y, button)
+		self.state:mousepressed(x, y, button)
+	end,
+	
+	mousereleased = function(self, x, y, button)
+		self.state:mousereleased(x, y, button)
+	end,
+	
+	changeState = function(self, name)
+		assert(name, "changeState issues with invalid state name!")
+		assert(state[name], "Unknown gamestate " .. name .. "!")
+		self.state = state[name]
+		self.state:reset()
+	end,
+	
+	--write a .save file. The filename should be a property of "data": data.fileName = "save01" (no extenstion is needed)
+	saveGame = function(self, data)
+		if not love.filesystem.isDirectory("save") then asser(love.filesystem.mkdir("save"), "Unable to create save directory in " .. love.filesystem.getSaveDirectory() .. "!") end
+		file = love.filesystem.newFile("save/" .. data.fileName .. ".save")
+		file:open("w")
+		for k, v in pairs(data) do
+			if k ~= "fileName" then
+				x = file:write(k .. "=" .. v .. "\n")
+				if not x then return nil end
+			end
+		end
+		return true
+	end,
+	
+	--load .save file. If no specific file is given it returns the latest file
+	loadGame = function(self, name)
+		if not love.filesystem.isDirectory("save") then assert(love.filesystem.mkdir("save"), "Unable to create save directory in " .. love.filesystem.getSaveDirectory() .. "!") end
+		--load the latest save file if no file is given (useful for 'continue' option)
+		if not name then
+			local saveFiles = love.filesystem.enumerate("save")
+			local orderedFiles = {}
+			for k, file in ipairs(saveFiles) do
+				--ignore files such as .DS_Store
+				if not (file:sub(1, 1) == ".") and file:match("%.save$") then
+					table.insert(orderedFiles, {f = file, t = love.filesystem.getLastModified("save/" .. file) or 0})
+				end
+			end
+			if # orderedFiles ~= 0 then
+				--sort the files in modified order
+				table.sort(orderedFiles, function(a, b) return a.t > b.t end)
+				name = orderedFiles[1].f:match("^(.+)%.save$")
+			end
+		end
+		--don't do anything if there are no saves
+		if name then
+			if love.filesystem.isFile("save/" .. name .. ".save") then
+				local saveFile = {}
+				for l in love.filesystem.lines("save/" .. name .. ".save") do
+					local k, v = l:match("^(..-)=(.+)$")
+					if k and v then
+						saveFile[k] = tonumber(v) and tonumber(v) or v
+						saveFile.fileName = name
+					end
+				end
+				return saveFile
+			end
+		end
 	end
 }
 
 class "gamestate" {
-	__init__ = function(self, name)
-		assert(name, "State declared without a name.")
-		state[name] = self
+	__init__ = function(self, name, file)
+		assert(name, "State declared with no name!")
+		assert(not state[name], "State declared with ambiguous name!")
+		local newstate = love.filesystem.load("state/" .. file)()
+		for k, v in pairs(newstate) do
+			self[k] = v --assimilate!!
+		end
 		
-		self.load = function() end
+		local callbacks = {"reset", "update", "draw", "focus", "quit", "keypressed", "keyreleased", "joystickpressed", "joystickreleased", "mousepressed", "mousereleased"}
+		for k, call in ipairs(callbacks) do
+			self[call] = self[call] or function() end
+		end	
+		
+		self:reset()
 	end
 }
