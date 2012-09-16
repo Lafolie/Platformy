@@ -8,16 +8,19 @@ return {
 		self.map = {}
 		self.player = {}
 		self.entity = {}
-		self.tileset = cache.tileset("tileset/test.lua")
+		self.map = map(love.filesystem.load("map/test.map")())
 	end,
 	
 	update = function(self, dt, t)
-
+		self.map:update(dt, t)
+		self.map.offsetX = 0
+		self.map.offsetY = 0
 	end,
 	
 	draw = function(self)
 		love.graphics.push()
 		love.graphics.scale(platformy.scale)
+		self.map:draw(2)
 		love.graphics.print("Hello world", 1, 1)
 		love.graphics.pop()
 	end,

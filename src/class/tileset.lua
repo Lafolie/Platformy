@@ -4,17 +4,21 @@
 ]]
 
 class "tileset" {
-	__init__ = function(self, filepath, properties, tileSize, autoProp, tiles)
+	__init__ = function(self, data)
+		local filepath, properties, tileSize, autoProp, tiles = unpack(data)
 		--cache the image
 		self.img = cache.image(filepath)
+		--generate tile properties table
+		self.properties = {}
+		for name, prop in pairs(properties) do
+			self.properties[name] = tileProperties(unpack(prop))
+		end
 		--generate tiles
-		self.properties = properties
 		local width = self.img:getWidth()
 		local height = self.img:getHeight()
 		self.tile = {}
 		self.tileSize = tileSize
 		local tileGrid = tileSize + 2
-		
 		for y = 0, (height / tileGrid) - 1 do
 			for x = 0, (width / tileGrid) - 1 do
 				self.tile[# self.tile + 1] = {

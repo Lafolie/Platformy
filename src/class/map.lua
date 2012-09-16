@@ -4,7 +4,8 @@
 ]]
 
 class "map" {
-	__init__ = function(self, layout, tileset, dynamic, environment, name)
+	__init__ = function(self, data)
+		local layout, tileset, dynamic, environment, name = unpack(data)
 		self.layout = layout
 		self.dynamic = dynamic or {} --holds dynamic tiles
 		self.tileset = cache.tileset(tileset)
@@ -15,8 +16,10 @@ class "map" {
 		self.width = # layout[2][1]
 		self.height = # layout[2]
 		self.batch = {}
+		self.offsetX = love.graphics.getWidth()
+		self.offsetY = love.graphics.getHeight()
 		for x = 1, # layout do
-			self.batch[x] = love.graphics.newSpriteBatch(tileset.img, self.width * self.height)
+			self.batch[x] = love.graphics.newSpriteBatch(self.tileset.img, self.width * self.height)
 		end
 		
 		self.animatedTiles = {}
@@ -27,7 +30,7 @@ class "map" {
 			self.batch[z]:bind()
 			for y = 0, # layout[z] - 1 do
 				for x = 0, # layout[z][y + 1] - 1 do
-					local currentTile = tileset.tile[layout[z][y + 1][x + 1]]
+					local currentTile = self.tileset.tile[layout[z][y + 1][x + 1]]
 					local id = self.batch[z]:addq(currentTile.quad, x * 16, y * 16)
 					if currentTile.property.frame then
 						table.insert(self.animatedTiles, id)

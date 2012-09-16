@@ -1,0 +1,20 @@
+local image = "tileset/zeroTiles2.png"
+local properties = {
+	clip = {2},
+	noclip = {},
+	ramp = {3, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}},
+	ramp2 = {1, {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1}}
+}
+local tileSize = 16
+local autoMap = {
+	"noclip", "noclip", "noclip", "noclip", "clip", "clip",
+	"noclip", "clip", "clip", "clip", "noclip", "noclip",
+	"clip", "clip", "clip", "clip", "noclip", "clip",
+	"clip", "clip", "clip", "clip", "noclip", "noclip",
+	"clip", "noclip", "ramp", "ramp2", "clip", "clip",
+	"clip", "clip", "clip", "clip", "clip", "clip"
+
+}
+local append = {}
+
+return { image, properties, tileSize, autoMap, append }
