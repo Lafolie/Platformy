@@ -16,9 +16,6 @@ class "game" {
 			state[name] = gamestate(name, file)
 		end
 		
-		self.save.fileName = "export"
-		self:saveGame(self.save)
-		
 		assert(state.init, "Could not find mandatory file \"state/init.state\"!")
 		self:changeState("init")
 	end,

@@ -67,11 +67,11 @@ cache._load = {
 	end,
 	
 	tileset = function(name)
-		return tileset(love.filesystem.load(name)())
+		return tileset(love.filesystem.load(name)()), true
 	end,
 	
 	spriteset = function(name)
-		return spriteset(love.filesystem.load(name)())
+		return spriteset(love.filesystem.load(name)()), true
 	end
 }
 

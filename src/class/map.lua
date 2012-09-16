@@ -5,9 +5,12 @@
 
 class "map" {
 	__init__ = function(self, data)
-		local layout, tileset, dynamic, environment, name = unpack(data)
+		local layout, tileset, dynamic, environment, name, ents = unpack(data)
 		self.layout = layout
 		self.dynamic = dynamic or {} --holds dynamic tiles
+		self.ents = ents or {}
+		print(# ents)
+		print(# self.ents)
 		self.tileset = cache.tileset(tileset)
 		self.name = name or "Untitled Area"
 		self.posX = 0
@@ -82,6 +85,18 @@ class "map" {
 		if y <= 0 or y > # self.layout[self.env.oc] then return nil end
 		if x <= 0 or x > # self.layout[self.env.oc][y] then return nil end
 		return self.tileset.tile[self.layout[self.env.oc][y][x]].property --return tile properties
+	end,
+	
+	getEnts = function(self)
+		local ents = {}
+		print(self.layout)
+		print(type(self.ents))
+		for k, ent in ipairs(self.ents) do
+			local type, sprite, x, y, name = unpack(ent)
+			ents[k] = _entity[type](sprite, x, y, name)
+		end
+		self.ents = nil
+		return ents
 	end
 }
 

@@ -5,16 +5,6 @@
 	Collision is based on sizes that should correspond to the sprite and tile grid size.
 ]]
 
---load custom entities
-_entity = {}
-local ents = love.filesystem.enumerate("entity")
-for k, ent in ipairs(ents) do
-	--ignore hidden files
-	if not (ent:sub(1, 1) == ".") then
-		love.filesystem.load("entity/" .. ent)()
-	end
-end
-
 class "entity" (sprite) {
 	__init__ = function(self, name, spriteset, animation, width, height, posX, posY)
 		sprite.__init__(self, spriteset, animation, posX, posY)
@@ -355,4 +345,14 @@ class "entity" (sprite) {
 		x = math.max(math.min(x, map.width), 1)
 		return {posX = x * map.env.tileSize, posY = y * map.env.tileSize, pass = map:pass(x + offX2, y + offY2), prop = map:properties(x + offX2, y + offY2)}
 	end
-}			
+}
+
+--load custom entities
+_entity = {}
+local ents = love.filesystem.enumerate("entity")
+for k, ent in ipairs(ents) do
+	--ignore hidden files
+	if not (ent:sub(1, 1) == ".") then
+		love.filesystem.load("entity/" .. ent)()
+	end
+end

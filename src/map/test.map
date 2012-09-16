@@ -1,6 +1,6 @@
-return {
-	--table layout
-	{{}, {
+--table layout
+local layout = {
+	{
 		{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15},
 		{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
 		{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
@@ -16,18 +16,24 @@ return {
 		{15,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
 		{15,  1,  1,  1,  1,  1, 15, 28,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 15},
 		{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15}
-	}, {}},
-	--string tileset
-	"tileset/example.tset",
-	--table dynamic
-	{},
-	--table environment
-	{
-		oc = 2,
-		friction = 1000,
-		gravity = 800,
-		tileSize = 16
-	},
-	--string name
-	"Test Map"
+	}
 }
+--string tileset
+local tileset = "tileset/example.tset"
+--table dynamic
+local dynamic = {}
+--table environment
+local environment = {
+	oc = 1,
+	friction = 1000,
+	gravity = 800,
+	tileSize = 16
+}
+--string name
+local name = "Test Map"
+--table entities
+local entity = {
+	{type = "player", sprite = "spr/fullsuit.spr", posX = 20, posY = 20}
+}
+
+return { layout, tileset, dynamic, environment, name, entity }
