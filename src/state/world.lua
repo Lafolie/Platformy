@@ -21,7 +21,6 @@ return {
 		love.graphics.push()
 		love.graphics.scale(platformy.scale)
 		self.map:draw(2)
-		love.graphics.print("Hello world", 1, 1)
 		love.graphics.pop()
 	end,
 	
