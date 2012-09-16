@@ -4,7 +4,7 @@
 ]]
 
 class "_entity.player" (entity) {
-	__init__ = function(self, spriteset, posX, posY)
+	__init__ = function(self, spriteset, posX, posY, name)
 		entity.__init__(self,  name, spriteset, animation, width, height, posX, posY)
 	end
 }

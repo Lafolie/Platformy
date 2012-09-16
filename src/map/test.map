@@ -33,7 +33,7 @@ local environment = {
 local name = "Test Map"
 --table entities
 local entity = {
-	{type = "player", sprite = "spr/fullsuit.spr", posX = 20, posY = 20}
+	{type = "player", sprite = "spr/fullsuit.spr", posX = 30, posY = 30}
 }
 
 return { layout, tileset, dynamic, environment, name, entity }

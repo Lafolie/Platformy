@@ -7,7 +7,7 @@
 
 class "entity" (sprite) {
 	__init__ = function(self, name, spriteset, animation, width, height, posX, posY)
-		sprite.__init__(self, spriteset, animation, posX, posY)
+		sprite.__init__(self, spriteset, posX, posY)
 		
 		--unfinished bits
 		self.name = name or "New Entity"

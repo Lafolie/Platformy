@@ -15,12 +15,7 @@ love.draw = function()
 end
 
 --love.keypressed = function(key, unicode)
---	if key == platformy.key.jump and not platformy.sprite.samus.air and platformy.sprite.samus.velY >= 0 then
---		platformy.sprite.samus.control.jump = true
---	end
---	if key == platformy.key.fire then
---		platformy.sprite.samus.control.fire = true
---	end
+
 --end
 --
 --love.keyreleased = function(key)

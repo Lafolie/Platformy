@@ -8,18 +8,24 @@ return {
 		self.map = {}
 		self.player = {}
 		self.entity = {}
-		self.test2 = _entity.player("spr/fullsuit.spr", 20, 20)
 		self.map = map(love.filesystem.load("map/test.map")())
-		self.entity = map:getEnts()
+		self.entity = self.map:getEnts()
 		
 	end,
 	
 	update = function(self, dt, t)
+		--collect input
+		if love.keyboard.isDown("a") then self.entity[1].control.left = true else self.entity[1].control.left = nil end
+		if love.keyboard.isDown("d") then self.entity[1].control.right = true else self.entity[1].control.right = nil end
+		if love.keyboard.isDown(".") then self.entity[1].control.jumpPress = true else self.entity[1].control.jumpPress = nil end
+		
 		--update the map(?)
 		self.map:update(dt, t)
 		
 		--update entities
-		
+		for k, entity in ipairs(self.entity) do
+			entity:update(dt, t, self.map, 0, 0, {})
+		end
 		
 		self.map.offsetX = 0
 		self.map.offsetY = 0
@@ -34,6 +40,9 @@ return {
 			self.map:draw(z)
 		end
 		--draw player and entites
+		for k, entity in ipairs(self.entity) do
+			entity:draw()
+		end
 		--draw occupied layer
 		self.map:draw(self.map.env.oc)
 		--draw overlays
@@ -52,17 +61,24 @@ return {
 	end,
 	
 	keypressed = function(self, key, unicode)
-		--input handling
+		if key == "." and not self.entity[1].air and self.entity[1].velY >= 0 then
+			self.entity[1].control.jump = true
+		end
+		if key == "/" then
+			self.entity[1].control.fire = true
+		end	
 	end,
 	
 	keyreleased = function(self, key)
+		--function keys
 		if key == "escape" then love.event.push("quit") end --quit on esc
 		if key == "f1" then debugMode = not(debugMode) end
 		if key == "f2" then
-		platformy.scale = platformy.scale >=  4 and 1 or platformy.scale + 1
-		love.graphics.setMode(platformy.scale * 320, platformy.scale * 240, nil, true, 0)
-	end
-
+			platformy.scale = platformy.scale >=  4 and 1 or platformy.scale + 1
+			love.graphics.setMode(platformy.scale * 320, platformy.scale * 240, nil, true, 0)
+		end
+		--gameplay keys
+		if key == "." then self.entity[1].control.jumpRelease = true end
 	end,
 	
 	joystickpressed = function(self, joystick, button)
