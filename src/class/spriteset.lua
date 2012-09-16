@@ -4,8 +4,9 @@
 ]]
 
 class "spriteset" {
-	__init__ = function(self, filepath, spriteWidth, spriteHeight)
-		self.img = love.graphics.newImage(filepath)
+	__init__ = function(self, data)
+		local filepath, spriteWidth, spriteHeight, animation = unpack(data)
+		self.img = cache.image(filepath)
 		local width = self.img:getWidth()
 		local height = self.img:getHeight()
 		self.sprite = {}

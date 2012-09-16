@@ -8,7 +8,8 @@ return {
 		self.map = {}
 		self.player = {}
 		self.entity = {}
-		
+		self.test = cache.spriteset("spr/fullsuit.spr")
+		self.test2 = _entity.player("spr/fullsuit.spr", 20, 20)
 		self.map = map(love.filesystem.load("map/test.map")())
 		
 	end,

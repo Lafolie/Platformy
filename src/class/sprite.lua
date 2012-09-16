@@ -4,9 +4,9 @@
 ]]
 
 class "sprite" {
-	__init__ = function(self, spriteset, animation, posX, posY)
-		self.spriteset = spriteset
-		self.animation = animation or {stand = {{1, 0}}, run = {{2, 0.10}, {3, 0.10}, {4, 0.10}}, jump = {{5, 0}}, screw = {{6, 0.05}, {7, 0.05}, {8, 0.05}, {9, 0.05}}} --default animations for testing
+	__init__ = function(self, spriteset, posX, posY)
+		self.spriteset = cache.spriteset(spriteset)
+		self.animation = self.spriteset.animation or {stand = {{1, 0}}, run = {{2, 0.10}, {3, 0.10}, {4, 0.10}}, jump = {{5, 0}}, screw = {{6, 0.05}, {7, 0.05}, {8, 0.05}, {9, 0.05}}} --default animations for testing
 		self.currentAnimation = "stand" --has to be done if ultimately sprites can be created in other poses
 		self:setAnim("stand")
 		self.animCount = 1

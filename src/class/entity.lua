@@ -10,8 +10,8 @@ _entity = {}
 local ents = love.filesystem.enumerate("entity")
 for k, ent in ipairs(ents) do
 	--ignore hidden files
-	if not ent:sub(1, 1) == "." then
-		require("entity/" .. ent)
+	if not (ent:sub(1, 1) == ".") then
+		love.filesystem.load("entity/" .. ent)()
 	end
 end
 

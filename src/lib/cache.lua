@@ -28,7 +28,7 @@ loadItem = function(type, name)
 	if cache.item[uid] then return cache.item[uid] end
 	
 	--check for format handler
-	if not cache._load[type] then return error(("Unknown resource type: %s"):format(type)) end
+	if not cache._load[type] then return error(("No cache handler for format: %s"):format(type)) end
 	
 	--load the item
 	local item, store = cache._load[type](name)
@@ -68,6 +68,10 @@ cache._load = {
 	
 	tileset = function(name)
 		return tileset(love.filesystem.load(name)())
+	end,
+	
+	spriteset = function(name)
+		return spriteset(love.filesystem.load(name)())
 	end
 }
 
