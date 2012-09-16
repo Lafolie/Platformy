@@ -1,0 +1,10 @@
+--[[
+	PLAYER
+	An entity designed for player control.
+]]
+
+class "_entity.player" (entity) {
+	__init__ = function(self)
+		entity.__init__(self,  name, spriteset, animation, width, height, posX, posY)
+	end
+}
