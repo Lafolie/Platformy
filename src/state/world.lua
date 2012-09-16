@@ -8,7 +8,9 @@ return {
 		self.map = {}
 		self.player = {}
 		self.entity = {}
+		
 		self.map = map(love.filesystem.load("map/test.map")())
+		
 	end,
 	
 	update = function(self, dt, t)
@@ -18,9 +20,20 @@ return {
 	end,
 	
 	draw = function(self)
+		--push and scale
 		love.graphics.push()
 		love.graphics.scale(platformy.scale)
-		self.map:draw(2)
+		--draw background layers
+		for z = 1, self.map.env.oc - 1 do
+			self.map:draw(z)
+		end
+		--draw player and entites
+		--draw occupied layer
+		self.map:draw(self.map.env.oc)
+		--draw overlays
+		for z = self.map.env.oc, # self.map.layout do
+			self.map:draw(z)
+		end
 		love.graphics.pop()
 	end,
 	

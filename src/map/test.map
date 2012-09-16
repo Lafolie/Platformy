@@ -23,6 +23,7 @@ return {
 	{},
 	--table environment
 	{
+		oc = 2,
 		friction = 1000,
 		gravity = 800,
 		tileSize = 16

@@ -12,9 +12,9 @@ class "map" {
 		self.name = name or "Untitled Area"
 		self.posX = 0
 		self.posY = 0
-		self.env = environment or {["friction"] = 1000, ["gravity"] = 600, ["tileSize"] = 16}
-		self.width = # layout[2][1]
-		self.height = # layout[2]
+		self.env = environment or {friction = 1000, gravity = 600, tileSize = 16, oc = 2}
+		self.width = # layout[self.env.oc][1]
+		self.height = # layout[self.env.oc]
 		self.batch = {}
 		self.offsetX = love.graphics.getWidth()
 		self.offsetY = love.graphics.getHeight()
@@ -73,15 +73,15 @@ class "map" {
 	end,
 	
 	pass = function(self, x, y)
-		if y <= 0 or y > # self.layout[2] then return nil end
-		if x <= 0 or x > # self.layout[2][y] then return nil end
-		return self.tileset.tile[self.layout[2][y][x]].property.pass--return passability property of xy
+		if y <= 0 or y > # self.layout[self.env.oc] then return nil end
+		if x <= 0 or x > # self.layout[self.env.oc][y] then return nil end
+		return self.tileset.tile[self.layout[self.env.oc][y][x]].property.pass--return passability property of xy
 	end,
 	
 	properties = function(self, x, y)
-		if y <= 0 or y > # self.layout[2] then return nil end
-		if x <= 0 or x > # self.layout[2][y] then return nil end
-		return self.tileset.tile[self.layout[2][y][x]].property --return tile properties
+		if y <= 0 or y > # self.layout[self.env.oc] then return nil end
+		if x <= 0 or x > # self.layout[self.env.oc][y] then return nil end
+		return self.tileset.tile[self.layout[self.env.oc][y][x]].property --return tile properties
 	end
 }
 
