@@ -15,9 +15,9 @@ return {
 	
 	update = function(self, dt, t)
 		--collect input
-		if love.keyboard.isDown("a") then self.entity[1].control.left = true else self.entity[1].control.left = nil end
-		if love.keyboard.isDown("d") then self.entity[1].control.right = true else self.entity[1].control.right = nil end
-		if love.keyboard.isDown(".") then self.entity[1].control.jumpPress = true else self.entity[1].control.jumpPress = nil end
+		if love.keyboard.isDown(platformy.pref.key.left) then self.entity[1].control.left = true else self.entity[1].control.left = nil end
+		if love.keyboard.isDown(platformy.pref.key.right) then self.entity[1].control.right = true else self.entity[1].control.right = nil end
+		if love.keyboard.isDown(platformy.pref.key.jump) then self.entity[1].control.jumpPress = true else self.entity[1].control.jumpPress = nil end
 		
 		--update the map(?)
 		self.map:update(dt, t)
@@ -26,7 +26,7 @@ return {
 		for k, entity in ipairs(self.entity) do
 			entity:update(dt, t, self.map, 0, 0, {})
 		end
-		
+
 		self.map.offsetX = 0
 		self.map.offsetY = 0
 	end,
@@ -34,7 +34,7 @@ return {
 	draw = function(self)
 		--push and scale
 		love.graphics.push()
-		love.graphics.scale(platformy.scale)
+		love.graphics.scale(platformy.pref.scale)
 		--draw background layers
 		for z = 1, self.map.env.oc - 1 do
 			self.map:draw(z)
@@ -61,10 +61,10 @@ return {
 	end,
 	
 	keypressed = function(self, key, unicode)
-		if key == "." and not self.entity[1].air and self.entity[1].velY >= 0 then
+		if key == platformy.pref.key.jump and not self.entity[1].air and self.entity[1].velY >= 0 then
 			self.entity[1].control.jump = true
 		end
-		if key == "/" then
+		if key == platformy.pref.key.fire then
 			self.entity[1].control.fire = true
 		end	
 	end,
@@ -78,7 +78,7 @@ return {
 			love.graphics.setMode(platformy.pref.scale * 320, platformy.pref.scale * 240, nil, true, 0)
 		end
 		--gameplay keys
-		if key == "." then self.entity[1].control.jumpRelease = true end
+		if key == platformy.pref.key.jump then self.entity[1].control.jumpRelease = true end
 	end,
 	
 	joystickpressed = function(self, joystick, button)

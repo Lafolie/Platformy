@@ -21,7 +21,7 @@ class "game" {
 			},
 			pad = {}
 		}
-			
+		love.graphics.setMode(320 * self.pref.scale, 240 * self.pref.scale, self.pref.fullscreen, self.pref.vsync, self.pref.fsaa or 0)
 		--load save
 		self.save = self:loadFile()
 		--create gamestates
