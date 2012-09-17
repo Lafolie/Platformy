@@ -6,8 +6,24 @@ local state = {}
 
 class "game" {
 	__init__ = function(self)
+		--set prefrences
+		self.pref = self:loadFile("preferences.txt") or {
+			_fileName = "preferences.txt",
+			scale = 2,
+			vsync = true,
+			key = {
+				up = "w",
+				down = "s",
+				left = "a",
+				right = "d",
+				jump = ".",
+				fire = "/"
+			},
+			pad = {}
+		}
+			
 		--load save
-		self.save = self:loadGame()
+		self.save = self:loadFile()
 		--create gamestates
 		assert(love.filesystem.isDirectory("state"), "No states could be found!")
 		local stateFiles = love.filesystem.enumerate("state")
@@ -15,7 +31,6 @@ class "game" {
 			local name = file:match("^(.+)%.lua$")
 			state[name] = gamestate(name, file)
 		end
-		
 		assert(state.init, "Could not find mandatory file \"state/init.state\"!")
 		self:changeState("init")
 	end,
@@ -37,6 +52,7 @@ class "game" {
 	end,
 	
 	quit = function(self)
+		self:saveFile(self.pref)
 		self.state:quit()
 	end,
 	
@@ -71,22 +87,34 @@ class "game" {
 		self.state:reset()
 	end,
 	
-	--write a .save file. The filename should be a property of "data": data.fileName = "save01" (no extenstion is needed)
-	saveGame = function(self, data)
-		if not love.filesystem.isDirectory("save") then asser(love.filesystem.mkdir("save"), "Unable to create save directory in " .. love.filesystem.getSaveDirectory() .. "!") end
-		file = love.filesystem.newFile("save/" .. data.fileName .. ".save")
+	--write a (non-serial) table to a file. The filename should be a property of "data": data._fileName = "*.extn"
+	saveFile = function(self, data)
+		assert(type(data) == "table", "Tables must be provided to saveFile!")
+		if not love.filesystem.isDirectory("save") then asser(love.filesystem.mkdir("save"), "Unable to create save directory in " .. love.filesystem.getSaveDirectory() .. "!") end --make the save folder if required
+		file = love.filesystem.newFile(data._fileName)
 		file:open("w")
-		for k, v in pairs(data) do
-			if k ~= "fileName" then
-				x = file:write(k .. "=" .. v .. "\n")
-				if not x then return nil end
+		
+		local function serial(table, scope)
+			scope = scope or ""
+			for k, v in pairs(table) do
+				if k ~= "_fileName" then 
+					if type(v) == "table" then
+						serial(v, scope .. tostring(k) .. ".")
+					else
+						x = file:write(scope .. k .. "=" .. tostring(v) .. "\n") --write value
+						if not x then return nil end
+					end
+				end
 			end
 		end
+
+		serial(data)
+		
 		return true
 	end,
 	
-	--load .save file. If no specific file is given it returns the latest file
-	loadGame = function(self, name)
+	--load a file. If no specific file is given it returns the latest save file
+	loadFile = function(self, name)
 		if not love.filesystem.isDirectory("save") then assert(love.filesystem.mkdir("save"), "Unable to create save directory in " .. love.filesystem.getSaveDirectory() .. "!") end
 		--load the latest save file if no file is given (useful for 'continue' option)
 		if not name then
@@ -101,20 +129,40 @@ class "game" {
 			if # orderedFiles ~= 0 then
 				--sort the files in modified order
 				table.sort(orderedFiles, function(a, b) return a.t > b.t end)
-				name = orderedFiles[1].f:match("^(.+)%.save$")
+				name = orderedFiles[1]
 			end
 		end
 		--don't do anything if there are no saves
 		if name then
-			if love.filesystem.isFile("save/" .. name .. ".save") then
-				local saveFile = {}
-				for l in love.filesystem.lines("save/" .. name .. ".save") do
+			if love.filesystem.isFile(name) then
+				
+				local saveFile = {} --data from the file
+				local pointer
+				--find tables
+				--ASSUME: key.up
+				local function deserial(value)
+					pointer = saveFile
+					local scope, dotCount = value:gsub("%.", "%1")
+					for x = 1, dotCount do
+						local element = scope:match("^(..-)%.") --get the leftmost index
+						scope = scope:match("^" .. element .. "%.(.+)") --trim the current index for the next iteration
+						if not pointer[element] then pointer[element] = {} end --create the table if needed
+						pointer = pointer[element] --set the pointer to the current level
+					end
+					return scope
+				end
+				
+				--load the data
+				for l in love.filesystem.lines(name) do
 					local k, v = l:match("^(..-)=(.+)$")
 					if k and v then
-						saveFile[k] = tonumber(v) and tonumber(v) or v
-						saveFile.fileName = name
+						local index = deserial(k)
+						if v ~= "nil" and v ~= "false" then --ignore nil values that may have been set by the player
+							pointer[index] = tonumber(v) and tonumber(v) or v
+						end
 					end
 				end
+				saveFile._fileName = name
 				return saveFile
 			end
 		end

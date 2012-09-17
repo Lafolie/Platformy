@@ -74,8 +74,8 @@ return {
 		if key == "escape" then love.event.push("quit") end --quit on esc
 		if key == "f1" then debugMode = not(debugMode) end
 		if key == "f2" then
-			platformy.scale = platformy.scale >=  4 and 1 or platformy.scale + 1
-			love.graphics.setMode(platformy.scale * 320, platformy.scale * 240, nil, true, 0)
+			platformy.pref.scale = platformy.pref.scale >=  4 and 1 or platformy.pref.scale + 1
+			love.graphics.setMode(platformy.pref.scale * 320, platformy.pref.scale * 240, nil, true, 0)
 		end
 		--gameplay keys
 		if key == "." then self.entity[1].control.jumpRelease = true end
