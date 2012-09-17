@@ -9,8 +9,8 @@ return {
 		self.smoothIndex = 1
 		self.smoothFactor = platformy.pref.smoothFactor or 4
 		self.smooth = {}
-		self.offsetX = love.graphics.getWidth() * 0.5
-		self.offsetY = love.graphics.getHeight() * 0.5
+		self.offsetX = (love.graphics.getWidth() * 0.5) / platformy.pref.scale
+		self.offsetY = (love.graphics.getHeight() * 0.5) / platformy.pref.scale
 		
 		--management tables
 		self.map = {}
@@ -46,6 +46,8 @@ return {
 		self.player[1]:update(dt, t, self.map, -self.player[1].posX + self.offsetX, -self.player[1].posY + self.offsetY, self.entity)
 		
 		--determine camera smoothing factor
+		local camOffsetX = (self.player[1].posX < self.offsetX or self.player[1].posX > self.map.width * self.map.env.tileSize - self.offsetX) and self.player[1].posX or self.offsetX
+		local camOffsetY = (self.player[1].posY < self.offsetY or self.player[1].posY > self.map.height * self.map.env.tileSize - self.offsetY) and self.player[1].posY or self.offsetY
 		--smoothing factor. Used to smooth out the scrolling effect
 		local camX = -self.player[1].posX
 		local camY = -self.player[1].posY
@@ -59,13 +61,14 @@ return {
 			smoothOffset.y = smoothOffset.y + pos.y
 		end
 		
-		smoothOffset.x = (smoothOffset.x / # self.smooth) + self.offsetX
-		smoothOffset.y = (smoothOffset.y / # self.smooth) + self.offsetY
+		smoothOffset.x = camOffsetX ~= self.offsetX and 0 or (smoothOffset.x / # self.smooth) + camOffsetX
+		smoothOffset.y = camOffsetY ~= self.offsetY and 0 or (smoothOffset.y / # self.smooth) + self.offsetY
+		
 		
 		self.smoothIndex = self.smoothIndex + 1 <= self.smoothFactor and self.smoothIndex + 1 or 1
 		
 		--update player draw position
-		self.player[1]:update(0, t, self.map, camX + self.offsetX, camY + self.offsetY, self.entity)
+		self.player[1]:update(0, t, self.map, camX + camOffsetX, camY + camOffsetY, self.entity)
 		
 		--update entities
 		for k, entity in ipairs(self.entity) do
