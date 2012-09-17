@@ -17,8 +17,10 @@ class "map" {
 		self.width = # layout[self.env.oc][1]
 		self.height = # layout[self.env.oc]
 		self.batch = {}
-		self.offsetX = love.graphics.getWidth()
-		self.offsetY = love.graphics.getHeight()
+--		self.offsetX = love.graphics.getWidth()
+--		self.offsetY = love.graphics.getHeight()
+		self.offsetX = 0
+		self.offsetY = 0
 		for x = 1, # layout do
 			self.batch[x] = love.graphics.newSpriteBatch(self.tileset.img, self.width * self.height)
 		end

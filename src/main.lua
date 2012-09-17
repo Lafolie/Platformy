@@ -14,30 +14,6 @@ love.draw = function()
 	platformy:draw()
 end
 
---love.keypressed = function(key, unicode)
-
---end
---
---love.keyreleased = function(key)
---	if key == "escape" then love.event.push("quit") end
---	if key == "f1" then debugMode = not(debugMode)  end
---	if key == "f2" then
---		platformy.scale = platformy.scale >=  4 and 1 or platformy.scale + 1
---		love.graphics.setMode(platformy.scale * 320, platformy.scale * 240, nil, true, 0)
---	end
---	if key == "f3" then love.graphics.toggleFullscreen() end
---	if key == "f4" then 
---		platformy.key.up = platformy.key.up == "up" and "w" or "up"
---		platformy.key.down = platformy.key.down == "down" and "s" or "down"
---		platformy.key.left = platformy.key.left == "left" and "a" or "left"
---		platformy.key.right = platformy.key.right == "right" and "d" or "right"
---		platformy.key.jump = platformy.key.jump == "x" and "/" or "x"
---		platformy.key.fire = platformy.key.fire == "z" and "." or "z"
---	end
---	if key == platformy.key.jump then platformy.sprite.samus.control.jumpRelease = true end
---	if key == platformy.key.fire then platformy.sprite.samus.control.fire = nil end
---end
-
 love.focus = function(f)
 	platformy:focus(f)
 end
