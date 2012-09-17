@@ -23,7 +23,7 @@ class "game" {
 		}
 		love.graphics.setMode(320 * self.pref.scale, 240 * self.pref.scale, self.pref.fullscreen, self.pref.vsync, self.pref.fsaa or 0)
 		--load save
-		self.save = self:loadFile()
+--		self.save = self:loadFile()
 		--create gamestates
 		assert(love.filesystem.isDirectory("state"), "No states could be found!")
 		local stateFiles = love.filesystem.enumerate("state")
