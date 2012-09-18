@@ -50,7 +50,6 @@ class "game" {
 		love.graphics.setScissor(self._offsetX, self._offsetY, self._scissorX, self._scissorY)
 			self.state:draw()
 		love.graphics.pop()
-		self.print(REMOVE, 250, 1)
 	end,
 	
 	focus = function(self, f)

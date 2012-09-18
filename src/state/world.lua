@@ -19,7 +19,7 @@ return {
 		self.bullet = {}
 		self.map = map(love.filesystem.load("map/test2.map")())
 		self.player = self.map:getEnts()
-		self.player[1].weapon = weapon("spr/power.spr", 18, -9, 33, 0.1, "semi")
+		self.player[1].weapon = weapon(love.filesystem.load("weapon/powerbeam.lua")())
 		
 	end,
 	
