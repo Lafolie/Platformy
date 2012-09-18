@@ -1,0 +1,9 @@
+local filepath = "spr/power.png"
+local width = 4
+local height = 5
+local animation = {
+	stand = {
+		{1, 0}
+	}, 
+}
+return { filepath, width, height, animation }
