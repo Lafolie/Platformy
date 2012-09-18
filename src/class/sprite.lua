@@ -100,8 +100,8 @@ class "sprite" {
 		if debugMode then
 			love.graphics.setLineStyle("rough")
 			love.graphics.setColor(255, 100, 25, 150)
-			love.graphics.line(self.posX, 0, self.posX, love.graphics.getHeight())
-			love.graphics.line(0, self.posY, love.graphics.getWidth(), self.posY)
+			love.graphics.line(self.drawX + self.width, 0, self.drawX + self.width, love.graphics.getHeight())
+			love.graphics.line(0, self.drawY + self.height, love.graphics.getWidth(), self.drawY + self.height)
 			love.graphics.setColor(255, 255, 25, 150)
 			love.graphics.line(self.drawX, 0, self.drawX, love.graphics.getHeight())
 			love.graphics.line(0, self.drawY, love.graphics.getWidth(), self.drawY)

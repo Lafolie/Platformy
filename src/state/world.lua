@@ -9,8 +9,8 @@ return {
 		self.smoothIndex = 1
 		self.smoothFactor = platformy.pref.smoothFactor or 4
 		self.smooth = {}
-		self.offsetX = 320 / 2
-		self.offsetY = 240 / 2
+		self.offsetX = platformy._res.width / 2
+		self.offsetY = platformy._res.height / 2
 		
 		--management tables
 		self.map = {}
@@ -120,8 +120,11 @@ return {
 		
 		--debug stuff
 		if debugMode then
-			platformy.print(love.timer.getFPS(), 1, 1)
-			platformy.print(self.map.offsetX .. " " .. self.map.offsetY, 1, 15)
+			platformy.print(love.timer.getFPS() .. "fps at " .. self.map.name, 1, 1)
+			platformy.print(
+				"X: " .. self.player[1].posX .. " drawX: " .. self.player[1].drawX ..
+				"\nY: " .. self.player[1].posY .. " drawY: " .. self.player[1].drawY
+			, 1, 15)
 		end
 	end,
 	
@@ -154,8 +157,8 @@ return {
 			platformy.pref.fullscreen = not platformy.pref.fullscreen
 			if not platformy.pref.fullscreen then
 				--find the biggest window size the screen can accomodate 
-				platformy.pref.scale = math.min(math.floor(platformy._native.width / 320), math.floor((platformy._native.height - 32) / 240)) --take 32 for title bars and such
-				print(math.min(math.floor(platformy._native.width / 320), math.floor((platformy._native.height) / 240)))
+				platformy.pref.scale = math.min(math.floor(platformy._native.width / platformy._res.width), math.floor((platformy._native.height - 32) / platformy._res.height)) --take 32 for title bars and such
+				print(math.min(math.floor(platformy._native.width / platformy._res.width), math.floor((platformy._native.height) / platformy._res.height)))
 				
 			end
 			platformy:setMode()

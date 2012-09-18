@@ -11,6 +11,7 @@ class "game" {
 			_fileName = "preferences.txt",
 			scale = 2,
 			vsync = true,
+			filtering = "nearest",
 			key = {
 				up = "w",
 				down = "s",
@@ -21,8 +22,6 @@ class "game" {
 			},
 			pad = {}
 		}
-		self._native = {width = love.graphics.getWidth(), height = love.graphics.getHeight()}
-		self:setMode()
 		--load save
 		self.save = self.file.load()
 		--create gamestates
@@ -192,17 +191,18 @@ class "game" {
 	end,
 	
 	setMode = function(self)
+		love.graphics.setDefaultImageFilter(self.pref.filtering or "nearest", self.pref.filtering or "nearest")
 		if self.pref.fullscreen then
 			love.graphics.setMode(self._native.width, self._native.height, true, self.pref.vsync, self.pref.fsaa or 0)
-			self.pref.scale = math.min(self._native.width / 320, self._native.height / 240)
+			self.pref.scale = math.min(self._native.width / self._res.width, self._native.height / self._res.height)
 		else
-			love.graphics.setMode(320 * self.pref.scale, 240 * self.pref.scale, nil, self.pref.vsync, self.pref.fsaa or 0)
+			love.graphics.setMode(self._res.width * self.pref.scale, self._res.height * self.pref.scale, nil, self.pref.vsync, self.pref.fsaa or 0)
 		end
 		--set platformy drawing offset for fullscreen
-		self._offsetX = self.pref.fullscreen and (self._native.width - 320 * self.pref.scale) / 2 or 0
-		self._offsetY = self.pref.fullscreen and (self._native.height - 240 * self.pref.scale) / 2 or 0
-		self._scissorX = 320 * self.pref.scale
-		self._scissorY = 240 * self.pref.scale
+		self._offsetX = self.pref.fullscreen and (self._native.width - self._res.width * self.pref.scale) / 2 or 0
+		self._offsetY = self.pref.fullscreen and (self._native.height - self._res.height * self.pref.scale) / 2 or 0
+		self._scissorX = self._res.width * self.pref.scale
+		self._scissorY = self._res.height * self.pref.scale
 	end
 }
 

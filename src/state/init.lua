@@ -6,7 +6,11 @@
 return {
 	update = function(self, dt, t, game)
 		--initialise Platformy here
-		love.graphics.setDefaultImageFilter("nearest", "nearest") --for that pixel style
+		local map = {width = 20, height = 15}
+		local tileSize = 16
+		platformy._res = {width = map.width * tileSize, height = map.height * tileSize} --determine window resolution
+		platformy._native = {width = love.graphics.getWidth(), height = love.graphics.getHeight()} --store native resolution
+		platformy:setMode() --setup window
 		platformy:changeState("world") --to switch state we explicitly call platformy:changeState() We need to do this here to end the init state.
 	end,
 	

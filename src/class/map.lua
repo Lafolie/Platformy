@@ -18,8 +18,8 @@ class "map" {
 		--determine width and height
 		self.width = # layout[self.env.oc][1]
 		self.height = # layout[self.env.oc]
-		assert(self.width >= 20, "Minimum map width is 20!")
-		assert(self.height >= 15, "Minimum map height is 15!")
+		assert(self.width >= platformy._res.width / environment.tileSize, "Minimum map width is " .. platformy._res.width / environment.tileSize .. "!")
+		assert(self.height >= platformy._res.height / environment.tileSize, "Minimum map height is " .. platformy._res.height / environment.tileSize .. "!")
 		
 		self.batch = {}
 --		self.offsetX = love.graphics.getWidth()
