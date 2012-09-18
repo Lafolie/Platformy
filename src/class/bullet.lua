@@ -5,7 +5,7 @@
 
 class "bullet" (sprite) {
 	__init__ = function(self, spriteset, posX, posY, velX, velY, damage, direction)
-		sprite.__init__(self, spriteset, {stand = {{1, 0}}}, posX, posY)
+		sprite.__init__(self, spriteset, posX, posY)
 		self.velX = velX or 0
 		self.velY = velY or 0
 		self.damage = damage
@@ -23,12 +23,13 @@ class "bullet" (sprite) {
 		self.posY = self.posY + self.velY * dt
 		
 		local x, y =  math.ceil(self.posX / map.env.tileSize), math.ceil(self.posY / map.env.tileSize)
-		y = math.max(math.min(y, # map.layout[2]), 1)
-		x = math.max(math.min(x, # map.layout[2][y]), 1)
+		local oc = map.env.oc
+		y = math.max(math.min(y, # map.layout[oc]), 1)
+		x = math.max(math.min(x, # map.layout[oc][y]), 1)
 		
 		--check for collisions with entities
 		for k, entity in ipairs(check) do
-			if entity.collidePoint(self.posX, self.posY, entity.posX - entity.width, entity.posY - entity.height, entity.width, entity.height) then
+			if entity.collidePoint(self.posX, self.posY, entity.posX - entity.width, entity.posY - entity.height, entity.width * 2, entity.height * 2) then
 				entity:lock(0.25)
 				entity.hp = entity.hp - self.damage
 				entity.velX = self.velX

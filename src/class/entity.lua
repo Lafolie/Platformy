@@ -266,13 +266,13 @@ class "entity" (sprite) {
 				local bulletDirectionX = self.direction == "left" and -1 or 1
 				self.control.fire = self.weapon:fire(t, self.posX, self.posY, bulletDirectionX, 0)
 			end
-			--update the weapon & bullets
+		end--end dt check hack fix glitch bug crap stupid
+		
+		--update the weapon & bullets
 			if self.weapon then
 				if self.weapon.burst and not self.control.fire then self.weapon.burst = 0 end
 				self.weapon:update(dt, t, map, offsetX, offsetY, check)
 			end
-		end--end dt check hack fix glitch bug crap stupid
-		
 		--finish up!
 		--set animations
 		--special stuff for wall jumping
@@ -314,6 +314,17 @@ class "entity" (sprite) {
 		end
 		--draw self
 		sprite.draw(self)
+		
+		--debug stuff--------------------------------------
+		if debugMode then
+			love.graphics.setLineStyle("rough")
+			love.graphics.setColor(255, 100, 25, 150)
+			love.graphics.line(self.drawX + self.width, 0, self.drawX + self.width, love.graphics.getHeight())
+			love.graphics.line(0, self.drawY + self.height, love.graphics.getWidth(), self.drawY + self.height)
+			love.graphics.setColor(255, 255, 25, 150)
+			love.graphics.line(self.drawX, 0, self.drawX, love.graphics.getHeight())
+			love.graphics.line(0, self.drawY, love.graphics.getWidth(), self.drawY)
+		end
 	end,
 	
 	lock = function(self, time)

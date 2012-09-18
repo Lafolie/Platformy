@@ -7,7 +7,7 @@ class "weapon" {
 		self.bullet = {} --table of 'bullets' spawned by this weapon
 		self.spawnOffsetX = spawnOffsetX or 0
 		self.spawnOffsetY = spawnOffsetY or 0 --these cause the bullet to spawn in line with the users' sprite
-		self.bulletSpr = bulletSpr or spriteset("spr/power.png", 4, 5)
+		self.bulletSpr = cache.spriteset(bulletSpr) --or cache.spriteset("spr/power.png", 4, 5)
 		self.spawnVelX = spawnVelX or 250
 		self.spawnVelY = spawnVelY or self.spawnVelX
 		self.cool = cool or 0.1 --weapon cooldown
@@ -33,6 +33,7 @@ class "weapon" {
 	
 	--caled when the weapon needs to fire. local velX and velY here should be 1 or -1 to flip directions.
 	fire = function(self, t, posX, posY, velX, velY)
+		REMOVE = posX .. " " .. posY
 		--check for cooldown
 		if t - self.time >= self.cool then
 			--increase burst count if required

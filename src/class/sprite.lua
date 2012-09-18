@@ -5,7 +5,7 @@
 
 class "sprite" {
 	__init__ = function(self, spriteset, posX, posY)
-		self.spriteset = cache.spriteset(spriteset)
+		self.spriteset = type(spriteset) == "string" and cache.spriteset(spriteset) or spriteset
 		self.animation = self.spriteset.animation or {stand = {{1, 0}}, run = {{2, 0.10}, {3, 0.10}, {4, 0.10}}, jump = {{5, 0}}, screw = {{6, 0.05}, {7, 0.05}, {8, 0.05}, {9, 0.05}}} --default animations for testing
 		self.currentAnimation = "stand" --has to be done if ultimately sprites can be created in other poses
 		self:setAnim("stand")
@@ -96,16 +96,6 @@ class "sprite" {
 		--draw quad
 		love.graphics.setColor(self.color)
 		love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[self.currentFrame], self.drawX, self.drawY, 0, self.scaleX, self.scaleY, self.originX, self.originY)
-		--debug stuff--------------------------------------
-		if debugMode then
-			love.graphics.setLineStyle("rough")
-			love.graphics.setColor(255, 100, 25, 150)
-			love.graphics.line(self.drawX + self.width, 0, self.drawX + self.width, love.graphics.getHeight())
-			love.graphics.line(0, self.drawY + self.height, love.graphics.getWidth(), self.drawY + self.height)
-			love.graphics.setColor(255, 255, 25, 150)
-			love.graphics.line(self.drawX, 0, self.drawX, love.graphics.getHeight())
-			love.graphics.line(0, self.drawY, love.graphics.getWidth(), self.drawY)
-		end
 	end,
 	
 	setAnim = function(self, newAnimation)

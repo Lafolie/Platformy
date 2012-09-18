@@ -7,7 +7,7 @@ class "spriteset" {
 	__init__ = function(self, data)
 		local filepath, spriteWidth, spriteHeight, animation = unpack(data)
 		self.img = cache.image(filepath)
-		self.animation = animation
+		self.animation = animation or {stand = {{1, 0}}}
 		local width = self.img:getWidth()
 		local height = self.img:getHeight()
 		self.sprite = {}

@@ -16,8 +16,10 @@ return {
 		self.map = {}
 		self.player = {}
 		self.entity = {}
+		self.bullet = {}
 		self.map = map(love.filesystem.load("map/test2.map")())
 		self.player = self.map:getEnts()
+		self.player[1].weapon = weapon("spr/power.spr", 18, -9, 33, 0.1, "semi")
 		
 	end,
 	
@@ -44,6 +46,15 @@ return {
 		
 		--update player(s)
 		self.player[1]:update(dt, t, self.map, -self.player[1].posX + self.offsetX, -self.player[1].posY + self.offsetY, self.entity)
+		
+		--update entities
+		for k = #self.entity, 1, -1 do
+			local entity = self.entity[k]
+			entity:update(dt, t, self.tmap, smoothOffset.x + self.offsetX, smoothOffset.y + self.offsetY, self.entity)
+			if entity.kill then 
+				table.remove(self.entity, k) 
+			end
+		end
 		
 		--determine camera smoothing factor
 		local camOffsetX = (self.player[1].posX < self.offsetX or self.player[1].posX > self.map.width * self.map.env.tileSize - self.offsetX) and self.player[1].posX or self.offsetX
