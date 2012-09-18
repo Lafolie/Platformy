@@ -14,6 +14,7 @@ class "map" {
 		self.posX = 0
 		self.posY = 0
 		self.env = environment or {friction = 1000, gravity = 600, tileSize = 16, oc = 2}
+		self.env.background = self.env.background and cache.image(self.env.background)
 		self.width = # layout[self.env.oc][1]
 		self.height = # layout[self.env.oc]
 		self.batch = {}

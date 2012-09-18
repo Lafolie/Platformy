@@ -16,7 +16,7 @@ return {
 		self.map = {}
 		self.player = {}
 		self.entity = {}
-		self.map = map(love.filesystem.load("map/test.map")())
+		self.map = map(love.filesystem.load("map/test2.map")())
 		self.player = self.map:getEnts()
 		
 	end,
@@ -47,7 +47,7 @@ return {
 		
 		--determine camera smoothing factor
 		local camOffsetX = (self.player[1].posX < self.offsetX or self.player[1].posX > self.map.width * self.map.env.tileSize - self.offsetX) and self.player[1].posX or self.offsetX
-		local camOffsetY = (self.player[1].posY < self.offsetY or self.player[1].posY > self.map.height * self.map.env.tileSize - self.offsetY) and self.player[1].posY or self.offsetY
+		local camOffsetY = (self.player[1].posY < self.offsetY or self.player[1].posY >= self.map.height * self.map.env.tileSize - self.offsetY) and self.player[1].posY or self.offsetY
 		--smoothing factor. Used to smooth out the scrolling effect
 		local camX = -self.player[1].posX
 		local camY = -self.player[1].posY
@@ -61,8 +61,30 @@ return {
 			smoothOffset.y = smoothOffset.y + pos.y
 		end
 		
-		smoothOffset.x = camOffsetX ~= self.offsetX and 0 or (smoothOffset.x / # self.smooth) + camOffsetX
-		smoothOffset.y = camOffsetY ~= self.offsetY and 0 or (smoothOffset.y / # self.smooth) + self.offsetY
+		--bound camera to map area
+		if camOffsetX < self.offsetX then
+			smoothOffset.x = 0
+		elseif camOffsetX > self.map.width * self.map.env.tileSize - self.offsetX then
+			smoothOffset.x  = -(self.map.width * self.map.env.tileSize) + self.offsetX * 2
+			camOffsetX = camOffsetX - (self.map.width - 20) * self.map.env.tileSize
+		else
+			local max = -(self.map.width * self.map.env.tileSize) + self.offsetX * 2
+			smoothOffset.x = math.min(math.max((smoothOffset.x / # self.smooth) + camOffsetX, max), 0)
+			print(smoothOffset.x)
+			
+		end
+		
+		if camOffsetY < self.offsetY then
+			smoothOffset.y = 0
+		elseif camOffsetY >= self.map.height * self.map.env.tileSize - self.offsetY then
+			smoothOffset.y = -(self.map.height * self.map.env.tileSize) + self.offsetY * 2
+			camOffsetY = camOffsetY - (self.map.height - 15) * self.map.env.tileSize
+		else
+			local max = -(self.map.height * self.map.env.tileSize) + self.offsetY * 2
+			smoothOffset.y = math.min(math.max((smoothOffset.y / # self.smooth) + camOffsetY, max), 0)
+		end
+--		smoothOffset.x = camOffsetX ~= self.offsetX and 0 or (smoothOffset.x / # self.smooth) + camOffsetX
+--		smoothOffset.y = camOffsetY ~= self.offsetY and 0 or (smoothOffset.y / # self.smooth) + self.offsetY
 		
 		
 		self.smoothIndex = self.smoothIndex + 1 <= self.smoothFactor and self.smoothIndex + 1 or 1
@@ -83,22 +105,29 @@ return {
 		--push and scale
 		love.graphics.push()
 		love.graphics.scale(platformy.pref.scale)
-		--draw background layers
-		for z = 1, self.map.env.oc - 1 do
-			self.map:draw(z)
-		end
-		--draw player and entites
-		for k, entity in ipairs(self.entity) do
-			entity:draw()
-		end
-		self.player[1]:draw()
-		--draw occupied layer
-		self.map:draw(self.map.env.oc)
-		--draw overlays
-		for z = self.map.env.oc, # self.map.layout do
-			self.map:draw(z)
-		end
+			--draw background layers
+			love.graphics.draw(self.map.env.background, 0, 0)
+			for z = 1, self.map.env.oc - 1 do
+				self.map:draw(z)
+			end
+			--draw player and entites
+			for k, entity in ipairs(self.entity) do
+				entity:draw()
+			end
+			self.player[1]:draw()
+			--draw occupied layer
+			self.map:draw(self.map.env.oc)
+			--draw overlays
+			for z = self.map.env.oc, # self.map.layout do
+				self.map:draw(z)
+			end
 		love.graphics.pop()
+		
+		--debug stuff
+		if debugMode then
+			platformy.print(love.timer.getFPS(), 1, 1)
+			platformy.print(self.map.offsetX .. " " .. self.map.offsetY, 1, 15)
+		end
 	end,
 	
 	focus = function(self, f)
