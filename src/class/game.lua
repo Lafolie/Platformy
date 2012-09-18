@@ -21,7 +21,8 @@ class "game" {
 			},
 			pad = {}
 		}
-		love.graphics.setMode(320 * self.pref.scale, 240 * self.pref.scale, self.pref.fullscreen, self.pref.vsync, self.pref.fsaa or 0)
+		self._native = {width = love.graphics.getWidth(), height = love.graphics.getHeight()}
+		self:setMode()
 		--load save
 		self.save = self.file.load()
 		--create gamestates
@@ -41,10 +42,14 @@ class "game" {
 		
 		--update current state
 		self.state:update(dt, t)
+		
 	end,
 	
 	draw = function(self)
-		self.state:draw()
+		love.graphics.push()
+		love.graphics.translate(self._offsetX, self._offsetY)
+			self.state:draw()
+		love.graphics.pop()
 	end,
 	
 	focus = function(self, f)
@@ -52,7 +57,7 @@ class "game" {
 	end,
 	
 	quit = function(self)
-		self.file.save(self.pref)
+		if self.file.save(self.pref) then print("Saved preferences.txt") end
 		self.state:quit()
 	end,
 	
@@ -183,6 +188,18 @@ class "game" {
 	dprint = function(text, x, y, color, shadow)
 		self.print(text, x, y, color, shadow)
 		print(text)
+	end,
+	
+	setMode = function(self)
+		if self.pref.fullscreen then
+			love.graphics.setMode(self._native.width, self._native.height, true, self.pref.vsync, self.pref.fsaa or 0)
+			self.pref.scale = math.min(self._native.width / 320, self._native.height / 240)
+		else
+			love.graphics.setMode(320 * self.pref.scale, 240 * self.pref.scale, nil, self.pref.vsync, self.pref.fsaa or 0)
+		end
+		--set platformy drawing offset for fullscreen
+		self._offsetX = self.pref.fullscreen and (self._native.width - 320 * self.pref.scale) / 2 or 0
+		self._offsetY = self.pref.fullscreen and (self._native.height - 240 * self.pref.scale) / 2 or 0
 	end
 }
 

@@ -15,8 +15,12 @@ class "map" {
 		self.posY = 0
 		self.env = environment or {friction = 1000, gravity = 600, tileSize = 16, oc = 2}
 		self.env.background = self.env.background and cache.image(self.env.background)
+		--determine width and height
 		self.width = # layout[self.env.oc][1]
 		self.height = # layout[self.env.oc]
+		assert(self.width >= 20, "Minimum map width is 20!")
+		assert(self.height >= 15, "Minimum map height is 15!")
+		
 		self.batch = {}
 --		self.offsetX = love.graphics.getWidth()
 --		self.offsetY = love.graphics.getHeight()

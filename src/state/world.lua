@@ -9,8 +9,8 @@ return {
 		self.smoothIndex = 1
 		self.smoothFactor = platformy.pref.smoothFactor or 4
 		self.smooth = {}
-		self.offsetX = (love.graphics.getWidth() * 0.5) / platformy.pref.scale
-		self.offsetY = (love.graphics.getHeight() * 0.5) / platformy.pref.scale
+		self.offsetX = 320 / 2
+		self.offsetY = 240 / 2
 		
 		--management tables
 		self.map = {}
@@ -70,8 +70,6 @@ return {
 		else
 			local max = -(self.map.width * self.map.env.tileSize) + self.offsetX * 2
 			smoothOffset.x = math.min(math.max((smoothOffset.x / # self.smooth) + camOffsetX, max), 0)
-			print(smoothOffset.x)
-			
 		end
 		
 		if camOffsetY < self.offsetY then
@@ -83,9 +81,6 @@ return {
 			local max = -(self.map.height * self.map.env.tileSize) + self.offsetY * 2
 			smoothOffset.y = math.min(math.max((smoothOffset.y / # self.smooth) + camOffsetY, max), 0)
 		end
---		smoothOffset.x = camOffsetX ~= self.offsetX and 0 or (smoothOffset.x / # self.smooth) + camOffsetX
---		smoothOffset.y = camOffsetY ~= self.offsetY and 0 or (smoothOffset.y / # self.smooth) + self.offsetY
-		
 		
 		self.smoothIndex = self.smoothIndex + 1 <= self.smoothFactor and self.smoothIndex + 1 or 1
 		
@@ -153,7 +148,17 @@ return {
 		if key == "f1" then debugMode = not(debugMode) end
 		if key == "f2" then
 			platformy.pref.scale = platformy.pref.scale >=  4 and 1 or platformy.pref.scale + 1
-			love.graphics.setMode(platformy.pref.scale * 320, platformy.pref.scale * 240, nil, true, 0)
+			platformy:setMode()
+		end
+		if key == "f3" then 
+			platformy.pref.fullscreen = not platformy.pref.fullscreen
+			if not platformy.pref.fullscreen then
+				--find the biggest window size the screen can accomodate 
+				platformy.pref.scale = math.min(math.floor(platformy._native.width / 320), math.floor((platformy._native.height) / 240)) --take 32 for title bars and such
+				print(math.min(math.floor(platformy._native.width / 320), math.floor((platformy._native.height) / 240)))
+				
+			end
+			platformy:setMode()
 		end
 		--gameplay keys
 		if key == platformy.pref.key.jump then self.player[1].control.jumpRelease = true end
