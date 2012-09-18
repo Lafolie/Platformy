@@ -146,7 +146,7 @@ return {
 		--function keys
 		if key == "escape" then love.event.push("quit") end --quit on esc
 		if key == "f1" then debugMode = not(debugMode) end
-		if key == "f2" then
+		if key == "f2" and not platformy.pref.fullscreen then
 			platformy.pref.scale = platformy.pref.scale >=  4 and 1 or platformy.pref.scale + 1
 			platformy:setMode()
 		end
@@ -154,7 +154,7 @@ return {
 			platformy.pref.fullscreen = not platformy.pref.fullscreen
 			if not platformy.pref.fullscreen then
 				--find the biggest window size the screen can accomodate 
-				platformy.pref.scale = math.min(math.floor(platformy._native.width / 320), math.floor((platformy._native.height) / 240)) --take 32 for title bars and such
+				platformy.pref.scale = math.min(math.floor(platformy._native.width / 320), math.floor((platformy._native.height - 32) / 240)) --take 32 for title bars and such
 				print(math.min(math.floor(platformy._native.width / 320), math.floor((platformy._native.height) / 240)))
 				
 			end

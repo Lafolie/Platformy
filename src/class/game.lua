@@ -48,6 +48,7 @@ class "game" {
 	draw = function(self)
 		love.graphics.push()
 		love.graphics.translate(self._offsetX, self._offsetY)
+		love.graphics.setScissor(self._offsetX, self._offsetY, self._scissorX, self._scissorY)
 			self.state:draw()
 		love.graphics.pop()
 	end,
@@ -200,6 +201,8 @@ class "game" {
 		--set platformy drawing offset for fullscreen
 		self._offsetX = self.pref.fullscreen and (self._native.width - 320 * self.pref.scale) / 2 or 0
 		self._offsetY = self.pref.fullscreen and (self._native.height - 240 * self.pref.scale) / 2 or 0
+		self._scissorX = 320 * self.pref.scale
+		self._scissorY = 240 * self.pref.scale
 	end
 }
 
