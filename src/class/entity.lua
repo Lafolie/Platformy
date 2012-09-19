@@ -218,11 +218,9 @@ class "entity" (sprite) {
 					local hmA = rampSensorL.prop.heightMap and rampSensorL.prop.heightMap[hmId] or 0
 					
 					local rampSensorR = self:sensor(self.rampSensorR, map)
-					local hmId = math.floor((self.posX + w / 4) - rampSensorR.posX + map.env.tileSize)
+					hmId = math.floor((self.posX + w / 4) - rampSensorR.posX + map.env.tileSize)
 					local hmB = rampSensorR.prop.heightMap and rampSensorR.prop.heightMap[hmId] or 0
 					
-					self.hmA = hmA --debug
-					self.hmB = hmB --debug
 					--prevent snapping from above
 					if self.air and self.posY < rampSensorR.posY - map.env.tileSize - math.max(hmA, hmB) then
 						self.velY = self.velY + map.env.gravity * dt
@@ -247,13 +245,24 @@ class "entity" (sprite) {
 	
 				--celings
 				if self.velY < 0 then
+					print("PRE-" .. self.posY)
 					if ceilSensorL.pass and ceilSensorR.pass then
-						if self.posY + self.velY < ceilSensorL.posY then
+						if self.posY + self.velY * dt < ceilSensorL.posY + map.env.tileSize then
+							--ramp stuff (why was it so much easier this time? The old one is a mess)
+							local hmId = math.floor((self.posX - w / 4) - ceilSensorL.posX + map.env.tileSize)
+							local hmA = ceilSensorL.pass == 1 and ceilSensorL.prop.heightMap[hmId] or 16
+							
+							hmId = math.floor((self.posX + w / 4) - ceilSensorR.posX + map.env.tileSize)
+							local hmB = ceilSensorR.pass == 1 and ceilSensorR.prop.heightMap[hmId] or 16
+							
+							local modifier = map.env.tileSize - (hmA + hmB) / 2
+							
+							self.posY = ceilSensorL.posY + map.env.tileSize + self.offsetY2 -- modifier + self.velY * dt
 							self.velY = 0
-							self.posY = ceilSensorL.posY + map.env.tileSize + self.offsetY2
 						end
+					
 					end
-					--place ramp ceiling code here
+					print("POST-" .. self.posY .. "\n")
 				end
 			end
 			
