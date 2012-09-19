@@ -61,6 +61,9 @@ class "entity" (sprite) {
 		
 		--badass pseudo physics (all hail Yuji Naka)
 		if dt ~= 0 then
+			--movement!
+			self.posX = self.posX + self.velX * dt
+			self.posY = self.posY + self.velY * dt
 			
 			--width and height aliases (halved since sprites are centered)
 			local w = self.width / 2
@@ -257,7 +260,8 @@ class "entity" (sprite) {
 							
 							local modifier = map.env.tileSize - (hmA + hmB) / 2
 							
-							self.posY = ceilSensorL.posY + map.env.tileSize + self.offsetY2 -- modifier + self.velY * dt
+							self.posY = ceilSensorL.posY + map.env.tileSize + self.offsetY2 * 2 - modifier + self.velY * dt
+							print(self.offsetY2)
 							self.velY = 0
 						end
 					
@@ -304,8 +308,6 @@ class "entity" (sprite) {
 			--falling
 			if self.air and not(self.jmpDisable) and math.abs(self.velY) > 85  then self:setAnim("jump") end
 		end
-		self.posX = self.posX + self.velX * dt
-		self.posY = self.posY + self.velY * dt
 		
 		--check for dead
 		if self.hp <= 0 then
