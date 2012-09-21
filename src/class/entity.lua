@@ -46,8 +46,8 @@ class "entity" (sprite) {
 		self.rampSensorL = {-w / 4, h + 1, 0, 0}
 		self.rampSensorR = {w / 4, h + 1, 0, 0}
 		
-		self.ceilSensorL = {-w / 4, -19, 0, 0}
-		self.ceilSensorR = {w / 4, -19, 0, 0}
+		self.ceilSensorL = {-w + 4, -19, 0, 0}
+		self.ceilSensorR = {w - 4, -19, 0, 0}
 	end,
 	
 	
@@ -159,7 +159,7 @@ class "entity" (sprite) {
 						self.velX = 0
 					end
 				end
-				if upperSensorL.pass and (self.air or math.abs(self.velY) < 75) then
+				if upperSensorL.pass and (self.air or math.abs(self.velY) < 75) and not ceilSensorL.prop.heightMap then
 					if self.velX < 0 then
 						self.velX = 0
 					end
@@ -182,7 +182,7 @@ class "entity" (sprite) {
 						self.velX = 0
 					end
 				end
-				if upperSensorR.pass and (self.air or math.abs(self.velY) < 75) then
+				if upperSensorR.pass and (self.air or math.abs(self.velY) < 75) and not ceilSensorR.prop.heightMap then
 					if self.velX > 0 then
 						self.velX = 0
 					end
@@ -249,17 +249,19 @@ class "entity" (sprite) {
 				--ceilings
 				if self.velY ~= 0 then
 					if ceilSensorL.pass and ceilSensorR.pass then
+
 						--ramp stuff (why was it so much easier this time? The old one is a mess)
 						local hmId = math.floor((self.posX - w / 4) - ceilSensorL.posX + map.env.tileSize)
-						local hmA = ceilSensorL.pass == 1 and ceilSensorL.prop.heightMap[hmId] or 16
+						local hmA = ceilSensorL.prop.heightMap and ceilSensorL.prop.heightMap[hmId] or 16
 						
 						hmId = math.floor((self.posX + w / 4) - ceilSensorR.posX + map.env.tileSize)
-						local hmB = ceilSensorR.pass == 1 and ceilSensorR.prop.heightMap[hmId] or 16
+						local hmB = ceilSensorR.prop.heightMap and ceilSensorR.prop.heightMap[hmId] or 16
 						
 						local modifier = map.env.tileSize - (hmA + hmB) / 2
+
+						self.velY = self.velY < 0 and map.env.gravity * dt or self.velY + map.env.gravity * dt
+						self.posY = ceilSensorL.posY + h * 2 + self.offsetY2 - modifier + self.velY * dt
 						
-						self.posY = ceilSensorL.posY + h * 2 + self.offsetY2 - modifier
-						self.velY = 0
 					end
 				end
 			end
