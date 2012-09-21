@@ -46,8 +46,8 @@ class "entity" (sprite) {
 		self.rampSensorL = {-w / 4, h + 1, 0, 0}
 		self.rampSensorR = {w / 4, h + 1, 0, 0}
 		
-		self.ceilSensorL = {-w / 4, -h * 2 - 1, 0, 0}
-		self.ceilSensorR = {w / 4, -h * 2 - 1, 0, 0}
+		self.ceilSensorL = {-w / 4, -19, 0, 0}
+		self.ceilSensorR = {w / 4, -19, 0, 0}
 	end,
 	
 	
@@ -246,7 +246,7 @@ class "entity" (sprite) {
 					self.ramp = nil			
 				end
 				
-				--celings
+				--ceilings
 				if self.velY ~= 0 then
 					if ceilSensorL.pass and ceilSensorR.pass then
 						--ramp stuff (why was it so much easier this time? The old one is a mess)
@@ -262,12 +262,11 @@ class "entity" (sprite) {
 						self.velY = 0
 					end
 				end
-				print(self.posY)
 			end
 
 			--vertical velocity limits
-			if self.velY < 0 and self.velY < -1000 then self.velY = -1000 end
-			if self.velY > 0 and self.velY > 1000 then self.velY = 1000 end
+			if self.velY < -1000 then self.velY = -1000 end
+			if self.velY > 1000 then self.velY = 1000 end
 			
 			--fire the weapon
 			if self.control.fire and self.weapon then
