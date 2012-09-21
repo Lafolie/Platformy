@@ -245,28 +245,22 @@ class "entity" (sprite) {
 				else
 					self.ramp = nil			
 				end
-	
+				
 				--celings
-				if self.velY < 0 then
-					print("PRE-" .. self.posY)
+				if self.velY ~= 0 then
 					if ceilSensorL.pass and ceilSensorR.pass then
-						if self.posY + self.velY * dt < ceilSensorL.posY + map.env.tileSize then
-							--ramp stuff (why was it so much easier this time? The old one is a mess)
-							local hmId = math.floor((self.posX - w / 4) - ceilSensorL.posX + map.env.tileSize)
-							local hmA = ceilSensorL.pass == 1 and ceilSensorL.prop.heightMap[hmId] or 16
-							
-							hmId = math.floor((self.posX + w / 4) - ceilSensorR.posX + map.env.tileSize)
-							local hmB = ceilSensorR.pass == 1 and ceilSensorR.prop.heightMap[hmId] or 16
-							
-							local modifier = map.env.tileSize - (hmA + hmB) / 2
-							
-							self.posY = ceilSensorL.posY + map.env.tileSize + self.offsetY2 * 2 - modifier + self.velY * dt
-							print(self.offsetY2)
-							self.velY = 0
-						end
-					
+						--ramp stuff (why was it so much easier this time? The old one is a mess)
+						local hmId = math.floor((self.posX - w / 4) - ceilSensorL.posX + map.env.tileSize)
+						local hmA = ceilSensorL.pass == 1 and ceilSensorL.prop.heightMap[hmId] or 16
+						
+						hmId = math.floor((self.posX + w / 4) - ceilSensorR.posX + map.env.tileSize)
+						local hmB = ceilSensorR.pass == 1 and ceilSensorR.prop.heightMap[hmId] or 16
+						
+						local modifier = map.env.tileSize - (hmA + hmB) / 2
+						
+						self.posY = ceilSensorL.posY + h * 2 + self.offsetY2 - modifier
+						self.velY = 0
 					end
-					print("POST-" .. self.posY .. "\n")
 				end
 			end
 			
@@ -279,6 +273,7 @@ class "entity" (sprite) {
 				local bulletDirectionX = self.direction == "left" and -1 or 1
 				self.control.fire = self.weapon:fire(t, self.posX, self.posY, bulletDirectionX, 0)
 			end
+			
 		end--end dt check hack fix glitch bug crap stupid
 		
 		--update the weapon & bullets

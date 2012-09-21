@@ -151,8 +151,8 @@ class "game" {
 						for x = 1, dotCount do
 							local element = scope:match("^(..-)%.") --get the leftmost index
 							scope = scope:match("^" .. element .. "%.(.+)") --trim the current index for the next iteration
-							if not pointer[element] then pointer[element] = {} end --create the table if needed
 							element = tonumber(element) and tonumber(element) or element
+							if not pointer[element] then pointer[element] = {} end --create the table if needed
 							pointer = pointer[element] --set the pointer to the current level
 						end
 						return scope

@@ -50,7 +50,7 @@ class "sprite" {
 		local x, y, w, h = self.spriteset.sprite[self.currentFrame]:getViewport()
 		self.offsetX = offsetX or self.offsetX
 		self.offsetY = offsetY or self.offsetY
-		self.offsetY2 = (h % 16) / 2
+		self.offsetY2 = (h % (self.height or 16)) / 2
 		self.drawX = self.posX - w / 2 + self.offsetX
 		self.drawY = self.posY - h / 2 + self.offsetY - self.offsetY2
 		
