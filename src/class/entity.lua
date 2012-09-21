@@ -262,8 +262,9 @@ class "entity" (sprite) {
 						self.velY = 0
 					end
 				end
+				print(self.posY)
 			end
-			
+
 			--vertical velocity limits
 			if self.velY < 0 and self.velY < -1000 then self.velY = -1000 end
 			if self.velY > 0 and self.velY > 1000 then self.velY = 1000 end
