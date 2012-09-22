@@ -46,8 +46,8 @@ class "entity" (sprite) {
 		self.rampSensorL = {-w / 4, h + 1, 0, 0}
 		self.rampSensorR = {w / 4, h + 1, 0, 0}
 		
-		self.ceilSensorL = {-w + 4, -19, 0, 0}
-		self.ceilSensorR = {w - 4, -19, 0, 0}
+		self.ceilSensorL = {-w + 4, -17, 0, 0}
+		self.ceilSensorR = {w - 4, -17, 0, 0}
 	end,
 	
 	
