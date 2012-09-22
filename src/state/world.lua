@@ -153,7 +153,8 @@ return {
 		end
 		if key == platformy.pref.key.fire then
 			self.player[1].control.fire = true
-		end	
+		end
+		
 	end,
 	
 	keyreleased = function(self, key)

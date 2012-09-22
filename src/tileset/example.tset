@@ -12,7 +12,7 @@ local autoMap = {
 	"noclip", "clip", "clip", "clip", "noclip", "noclip",
 	"clip", "clip", "clip", "clip", "noclip", "clip",
 	"clip", "clip", "clip", "clip", "noclip", "noclip",
-	"clip", "noclip", "ramp3", "ramp2", "clip", "clip",
+	"clip", "noclip", "ramp", "ramp2", "clip", "clip",
 	"clip", "clip", "clip", "clip", "clip", "clip"
 
 }

@@ -144,7 +144,6 @@ class "game" {
 					local saveFile = {} --data from the file
 					local pointer
 					--find tables
-					--ASSUME: key.up
 					local function deserial(value)
 						pointer = saveFile
 						local scope, dotCount = value:gsub("%.", "%1")
@@ -181,7 +180,7 @@ class "game" {
 		color = color or {255, 255, 255, 255}
 		shadow = shadow or {10, 10, 10, 255}
 		love.graphics.setColor(shadow)
-		love.graphics.print(text, x + 1, y + 2)
+		love.graphics.print(text, x + 1, y + 1)
 		love.graphics.setColor(color)
 		love.graphics.print(text, x, y)
 	end,

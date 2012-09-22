@@ -24,6 +24,8 @@ class "entity" (sprite) {
 		self.airAc = 2000
 		self.jmp = -300 --vertical acceleration
 		
+		self.enableAfterTimer = 0
+		
 		self.width = width or 16
 		self.height = height or self.width --these are used for collisions
 		
@@ -91,6 +93,9 @@ class "entity" (sprite) {
 					--check for same direction and adjust accordingly
 					self.velX = self.velX <= 0 and math.max(self.velX - self.accel * dt, -self.maxVelX) or self.velX - self.decel * dt
 					if self.velX < 0 then 
+						if self.direction ~= "left" then
+							self.enableAfterTimer = t
+						end
 						self.direction = "left"
 					end
 		
@@ -99,6 +104,9 @@ class "entity" (sprite) {
 					--check for same direction and adjust accordingly
 					self.velX = self.velX >= 0 and math.min(self.velX + self.accel * dt, self.maxVelX) or self.velX + self.decel * dt
 					if self.velX > 0 then
+						if self.direction ~= "right" then
+							self.enableAfterTimer = t
+						end
 						self.direction = "right"
 					end
 				end
@@ -304,6 +312,15 @@ class "entity" (sprite) {
 			if self.air and self.jmpDisable then self:setAnim("jump") end
 			--falling
 			if self.air and not(self.jmpDisable) and math.abs(self.velY) > 85  then self:setAnim("jump") end
+		end
+		
+		--after image stuff (temporary)
+		if (self.velX ~= 0 or self.velY ~= 0) and (t - self.enableAfterTimer < 0.75 or self.air) then
+			self.enableAfterImages = true
+			self.enableAfterTimer = self.air and t or self.enableAfterTimer
+		else
+			self.enableAfterImages = nil
+			self.enableAfterTimer = (self.velX == 0 and self.velY == 0) and t or 0
 		end
 		
 		--check for dead

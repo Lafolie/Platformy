@@ -70,12 +70,15 @@ class "sprite" {
 		--update after images
 		if self.afterImage then
 			if self.enableAfterImages then
+				--insert new image
 				if t - self.afterImage.time >= self.afterImage.count then
 					local afterImage = {posX = self.posX - w / 2, posY = self.posY - h / 2 - self.offsetY2, alpha = self.afterImage.alpha, frame = self.afterImage.frame or self.currentFrame, scaleX = self.scaleX, scaleY = self.scaleY, originX = self.originX, originY = self.originY}
 					table.insert(self.afterImage.pos, afterImage)
 					self.afterImage.time = t
 				end
 			end
+			
+			--update images
 			for k = # self.afterImage.pos, 1, -1 do
 				local afterImage = self.afterImage.pos[k]
 				afterImage.drawX = afterImage.posX + offsetX
@@ -89,10 +92,12 @@ class "sprite" {
 	
 	draw = function(self)
 		--draw after images
+		love.graphics.setBlendMode("additive")
 		for k, afterImage in ipairs(self.afterImage.pos) do
 			love.graphics.setColor(self.color[1], self.color[2], self.color[3], afterImage.alpha)
 			love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[afterImage.frame], afterImage.drawX, afterImage.drawY, 0, afterImage.scaleX, afterImage.scaleY, afterImage.originX, afterImage.originY)
 		end
+		love.graphics.setBlendMode("alpha")
 		--draw quad
 		love.graphics.setColor(self.color)
 		love.graphics.drawq(self.spriteset.img, self.spriteset.sprite[self.currentFrame], self.drawX, self.drawY, 0, self.scaleX, self.scaleY, self.originX, self.originY)
