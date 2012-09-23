@@ -42,7 +42,7 @@ class "sprite" {
 		end
 		--increase frame after the specified amount of time has passed
 		local velocity = 0
-		if self.velX and self.velY then
+		if self.velX and self.velY and not self.staticAnimation then
 			velocity = (math.sqrt(self.velX ^ 2 + self.velY ^ 2) * dt) / 100
 		end
 		

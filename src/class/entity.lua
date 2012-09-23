@@ -48,8 +48,8 @@ class "entity" (sprite) {
 		self.rampSensorL = {-w / 4, h + 1, 0, 0}
 		self.rampSensorR = {w / 4, h + 1, 0, 0}
 		
-		self.ceilSensorL = {-w + 4, -17, 0, 0}
-		self.ceilSensorR = {w - 4, -17, 0, 0}
+		self.ceilSensorL = {-w / 4, -17, 0, 0}
+		self.ceilSensorR = {w / 4, -17, 0, 0}
 	end,
 	
 	
@@ -244,7 +244,11 @@ class "entity" (sprite) {
 							--prevents the bug whereby the entity gets stuck on the corner of the block
 							self.velY = self.velY + (2 * map.env.gravity) * dt
 						else
-							self.posY = rampSensorR.posY - map.env.tileSize - (hmA + hmB) / 2 --math.max(hmA, hmB)
+							local heightOff = (hmA + hmB) / 2
+							if (hmA == map.env.tileSize and not hmB) or (hmB == map.env.tileSize and not hmA) then
+								heightoff = map.env.tileSize
+							end
+							self.posY = rampSensorR.posY - map.env.tileSize - heightOff --math.max(hmA, hmB)
 							self.velY = 0 
 							self.air = nil
 							self.ramp = true
@@ -275,8 +279,9 @@ class "entity" (sprite) {
 			end
 
 			--vertical velocity limits
-			if self.velY < -1000 then self.velY = -1000 end
-			if self.velY > 1000 then self.velY = 1000 end
+			self.velX = math.min(self.velX, self.maxVelX)
+			if self.velY < -600 then self.velY = -600 end
+			if self.velY > 600 then self.velY = 600 end
 			
 			--fire the weapon
 			if self.control.fire and self.weapon then
