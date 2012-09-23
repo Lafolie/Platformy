@@ -41,7 +41,12 @@ class "sprite" {
 			end
 		end
 		--increase frame after the specified amount of time has passed
-		if t - self.time > self.currentAnimation[self.animCount][2] then
+		local velocity = 0
+		if self.velX and self.velY then
+			velocity = (math.sqrt(self.velX ^ 2 + self.velY ^ 2) * dt) / 100
+		end
+		
+		if t - self.time + velocity > self.currentAnimation[self.animCount][2] then
 			self.time = t
 			self.animCount = self.animCount + 1 <= # self.currentAnimation and self.animCount + 1 or 1
 		end

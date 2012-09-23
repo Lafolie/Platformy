@@ -16,7 +16,7 @@ class "entity" (sprite) {
 		self.hp = 99
 		self.control = {}
 		self.velX = 0 --horizontal velocity
-		self.maxVelX = 115 --max x velocity
+		self.maxVelX = 125 --max x velocity
 		self.velY = 0 --vertical velocity
 		self.maxVelY = 100 --max y velocity
 		self.accel = 1000 --horizontal acceleration
