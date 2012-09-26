@@ -359,10 +359,22 @@ class "entity" (sprite) {
 		end
 	end,
 	
+	--lock control for an amount of time
 	lock = function(self, time)
 		self.controlLock = true
 		self.lockTime = love.timer.getTime()
 		self.lockFree = time
+	end,
+	
+	--apply damage
+	damage = function(self, amount, time, velX, velY)
+		amount = amount or 0
+		velX = velX or 0
+		velY = velY or 0
+		if time then self:lock(time) end
+		self.hp = self.hp - amount
+		self.velX = self.velX + velX
+		self.velY = self.velY + velY
 	end,
 	
 	--This is more compact:

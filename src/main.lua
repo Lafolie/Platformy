@@ -7,6 +7,7 @@ love.load = function()
 end
 
 love.update = function(dt)
+	dt = math.min(dt, 1/30)
 	platformy:update(dt)
 end
 
