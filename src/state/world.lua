@@ -33,6 +33,8 @@ return {
 			Player (0dt),
 			Entity,
 			Map drawing
+		
+		Todo: Player handling, pause (gui?), map ents
 	]]
 	
 	update = function(self, dt, t)
@@ -155,9 +157,6 @@ return {
 			self.player[1].control.fire = true
 		end
 		
-	end,
-	
-	keyreleased = function(self, key)
 		--function keys
 		if key == "escape" then love.event.push("quit") end --quit on esc
 		if key == "f1" then debugMode = not(debugMode) end
@@ -175,6 +174,9 @@ return {
 			end
 			platformy:setMode()
 		end
+	end,
+	
+	keyreleased = function(self, key)
 		--gameplay keys
 		if key == platformy.pref.key.jump then self.player[1].control.jumpRelease = true end
 	end,

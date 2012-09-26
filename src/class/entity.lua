@@ -48,8 +48,8 @@ class "entity" (sprite) {
 		self.rampSensorL = {-w / 4, h + 1, 0, 0}
 		self.rampSensorR = {w / 4, h + 1, 0, 0}
 		
-		self.ceilSensorL = {-w / 4, -17, 0, 0}
-		self.ceilSensorR = {w / 4, -17, 0, 0}
+		self.ceilSensorL = {-w + 4, -17, 0, 0}
+		self.ceilSensorR = {w - 4, -17, 0, 0}
 	end,
 	
 	
@@ -170,6 +170,7 @@ class "entity" (sprite) {
 				if upperSensorL.pass and (self.air or math.abs(self.velY) < 75) and not ceilSensorL.prop.heightMap then
 					if self.velX < 0 then
 						self.velX = 0
+						if self.ceilSensorL.pass then self.velY = 0 end
 					end
 					self.posX = lowerSensorL.posX + w
 				end
@@ -193,6 +194,7 @@ class "entity" (sprite) {
 				if upperSensorR.pass and (self.air or math.abs(self.velY) < 75) and not ceilSensorR.prop.heightMap then
 					if self.velX > 0 then
 						self.velX = 0
+						if self.ceilSensorR.pass then self.velY = 0 end
 					end
 					self.posX = upperSensorR.posX - (map.env.tileSize + w)
 				end
