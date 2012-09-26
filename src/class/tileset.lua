@@ -41,7 +41,7 @@ class "tileset" {
 }
 
 class "tileProperties" {
-	__init__ = function(self, pass, heightMap, frame, time)
+	__init__ = function(self, pass, heightMap, damage, frame, time)
 		--[[
 			Passabilitiy data (pass) should be stored as a number. Currently there are checks for the following:
 			
@@ -49,9 +49,10 @@ class "tileProperties" {
 				2 == solid
 				3 == right-facing ramp /
 		]]
-		self.pass = pass or nil
-		self.frame = frame or nil --should be a table of animation data as used for sprites
-		self.time = time or nil --used for animation, supply t to use
-		self.heightMap = heightMap or nil --height mapping for ramps, stairs and curved surfaces
+		self.pass = pass
+		self.frame = frame --should be a table of animation data as used for sprites
+		self.time = time --used for animation, supply t to use
+		self.heightMap = heightMap --height mapping for ramps, stairs and curved surfaces
+		self.damage = damage
 	end
 }

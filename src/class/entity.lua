@@ -72,6 +72,7 @@ class "entity" (sprite) {
 			local h = self.height / 2
 			
 			--update sensors
+			map:imprint(self) --imprints this entity onto the map. This speeds up checking for map entities
 			local jumpSensorL = self:sensor(self.jumpSensorL, map)
 			local jumpSensorR = self:sensor(self.jumpSensorR, map)
 			
@@ -85,6 +86,7 @@ class "entity" (sprite) {
 			
 			local ceilSensorL = self:sensor(self.ceilSensorL, map)
 			local ceilSensorR = self:sensor(self.ceilSensorR, map)
+			map:clear() --disregard the map imprint data
 			
 			--only move if control is enabled
 			if not(self.controlLock) then

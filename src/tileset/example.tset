@@ -1,4 +1,5 @@
 local image = "tileset/zeroTiles2.png"
+--pass, heightMap, damage, frame, time
 local properties = {
 	clip = {2},
 	noclip = {},

@@ -80,18 +80,31 @@ class "map" {
 		love.graphics.draw(self.batch[layer], self.posX + self.offsetX, self.posY + self.offsetY)
 	end,
 	
+	--return only the passibility of a tile
 	pass = function(self, x, y)
 		if y <= 0 or y > # self.layout[self.env.oc] then return nil end
 		if x <= 0 or x > # self.layout[self.env.oc][y] then return nil end
 		return self.tileset.tile[self.layout[self.env.oc][y][x]].property.pass--return passability property of xy
 	end,
 	
+	--return the properties of a tile
 	properties = function(self, x, y)
 		if y <= 0 or y > # self.layout[self.env.oc] then return nil end
 		if x <= 0 or x > # self.layout[self.env.oc][y] then return nil end
-		return self.tileset.tile[self.layout[self.env.oc][y][x]].property --return tile properties
+		
+		local tile = self.tileset.tile[self.layout[self.env.oc][y][x]].property
+		--check for collision functions
+		if self.target then
+			--damage
+			if tile.damage then
+				self.target:damage(tile.damage)
+			end
+		end
+		
+		return tile  --return tile properties
 	end,
 	
+	--get entites from initial map load (should executed once by map handler)
 	getEnts = function(self)
 		local ents = {}
 		for k, ent in ipairs(self.ents) do
@@ -99,6 +112,16 @@ class "map" {
 		end
 		self.ents = nil
 		return ents
+	end,
+	
+	--focus operations on a particular entity
+	imprint = function(self, entity)
+		self.target = entity
+	end,
+	
+	--clear the data set by imprinting
+	clear = function(self)
+		self.target = nil
 	end
 }
 

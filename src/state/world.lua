@@ -129,6 +129,8 @@ return {
 			for z = self.map.env.oc, # self.map.layout do
 				self.map:draw(z)
 			end
+			--temp stuff
+		platformy.print(self.player[1].hp, 1, 1)
 		love.graphics.pop()
 		
 		--debug stuff
