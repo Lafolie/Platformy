@@ -7,7 +7,7 @@ class "map" {
 	__init__ = function(self, data)
 		local layout, tileset, dynamic, environment, name, ents = unpack(data)
 		self.layout = layout
-		self.dynamic = dynamic or {} --holds dynamic tiles
+		self.mapEnt = dynamic or {} --holds dynamic tiles
 		self.ents = ents or {}
 		self.tileset = cache.tileset(tileset)
 		self.name = name or "Untitled Area"
@@ -48,8 +48,8 @@ class "map" {
 			self.batch[z]:unbind()
 		end
 		--initialise dynamic tiles
-		for k, dyn in ipairs(self.dynamic) do
-			if dyn.load then dyn:load() end
+		for k, mapEnt in ipairs(self.mapEnt) do
+			if mapEnt.load then mapEnt:load() end
 		end
 		
 		local renderTime = love.timer.getMicroTime() - renderTime
@@ -63,8 +63,8 @@ class "map" {
 			--animation function
 		end
 		
-		for k, dyn in ipairs(self.dynamic) do
-			dyn:update(dt, t, offsetX, offsetY)
+		for k, mapEnt in ipairs(self.mapEnt) do
+			mapEnt:update(dt, t, offsetX, offsetY)
 		end
 		
 	end,
@@ -72,8 +72,8 @@ class "map" {
 	draw = function(self, layer)
 		local layer = layer or 2
 		if layer == 2 then
-			for k, dyn in ipairs(self.dynamic) do
-				dyn:draw()
+			for k, mapEnt in ipairs(self.mapEnt) do
+				mapEnt:draw()
 			end
 		end
 		love.graphics.setColor(255, 255, 255, 255)
@@ -126,6 +126,33 @@ class "map" {
 }
 
 --dynamic tiles
-class "dynTile" {
+class "mapEnt" (sprite) {
+	__init__ = function(self, data)
+		local spriteset, posX, posY, accel, velX, velY = unpack(data)
+		sprite.__init__(self, spriteset, posX, posY)
+		self.posX = posX or 0
+		self.posY = posY or 0
+		self.accel = accel or 1000
+		self.maxVelX = velX or 100
+		self.maxVelY = velY or 100
+	end,
+	
+	update = function(dt, t, offsetX, offsetY)
+		sprite.update(self, dt, t, offsetX, offsetY)
+	end,
+	
+	draw = function()
+		sprite.draw(self)
+	end
 }
+
+--load custom mapEnts
+_mapEnt = {}
+local ents = love.filesystem.enumerate("mapEnt")
+for k, ent in ipairs(ents) do
+	--ignore hidden files
+	if not (ent:sub(1, 1) == ".") then
+		love.filesystem.load("mapEnt/" .. ent)()
+	end
+end
 	

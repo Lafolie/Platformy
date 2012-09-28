@@ -171,8 +171,6 @@ return {
 			if not platformy.pref.fullscreen then
 				--find the biggest window size the screen can accomodate 
 				platformy.pref.scale = math.min(math.floor(platformy._native.width / platformy._res.width), math.floor((platformy._native.height - 32) / platformy._res.height)) --take 32 for title bars and such
-				print(math.min(math.floor(platformy._native.width / platformy._res.width), math.floor((platformy._native.height) / platformy._res.height)))
-				
 			end
 			platformy:setMode()
 		end

@@ -100,8 +100,8 @@ class "entity" (sprite) {
 						end
 						self.direction = "left"
 					end
-		
 				end
+				
 				if self.control.right then
 					--check for same direction and adjust accordingly
 					self.velX = self.velX >= 0 and math.min(self.velX + self.accel * dt, self.maxVelX) or self.velX + self.decel * dt
@@ -265,7 +265,6 @@ class "entity" (sprite) {
 				--ceilings
 				if self.velY ~= 0 then
 					if ceilSensorL.pass and ceilSensorR.pass then
-
 						--ramp stuff (why was it so much easier this time? The old one is a mess)
 						local hmId = math.floor((self.posX - w / 4) - ceilSensorL.posX + map.env.tileSize)
 						local hmA = ceilSensorL.prop.heightMap and ceilSensorL.prop.heightMap[hmId] or 16
@@ -277,8 +276,8 @@ class "entity" (sprite) {
 
 						self.velY = self.velY < 0 and map.env.gravity * dt or self.velY + map.env.gravity * dt
 						self.posY = ceilSensorL.posY + h * 2 + self.offsetY2 - modifier + self.velY * dt
-						
 					end
+					print(self.posY .. " " .. self.velY * dt)
 				end
 			end
 
