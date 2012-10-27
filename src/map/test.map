@@ -27,7 +27,8 @@ local environment = {
 	oc = 1,
 	friction = 1000,
 	gravity = 800,
-	tileSize = 16
+	tileSize = 16,
+	background = "spr/bgtemp.png"
 }
 --string name
 local name = "Test Map"

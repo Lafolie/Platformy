@@ -280,7 +280,15 @@ class "entity" (sprite) {
 					print(self.posY .. " " .. self.velY * dt)
 				end
 			end
-
+			dseny = ceilSensorL.posY
+			if ceilSensorL.pass and upperSensorL.pass then
+				DSEN = 10
+				dceil = "CLIP"
+			else 
+				DSEN = DSEN and DSEN - 1 * dt 
+				dceil = ""
+			end
+			
 			--vertical velocity limits
 			self.velX = math.min(self.velX, self.maxVelX)
 			if self.velY < -600 then self.velY = -600 end
@@ -349,6 +357,11 @@ class "entity" (sprite) {
 		sprite.draw(self)
 		
 		--debug stuff--------------------------------------
+		if DSEN and DSEN >= 0 then
+			platformy.print("DSEN!!!", 50, 50)
+		end
+		platformy.print(dceil, 50, 65)
+		love.graphics.line(0, dseny, love.graphics.getWidth(), dseny)
 		if debugMode then
 			love.graphics.setLineStyle("rough")
 			love.graphics.setColor(255, 100, 25, 150)
